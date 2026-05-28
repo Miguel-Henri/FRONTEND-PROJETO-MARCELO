@@ -1,0 +1,255 @@
+<div class="cadastro-wrapper">
+    <div class="cadastro-card">
+
+        <div class="card-header">
+            <div class="header-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                </svg>
+            </div>
+            <h1>Cadastro de Usuário</h1>
+            <p>Preencha os dados para criar uma nova conta</p>
+        </div>
+
+        @if (sucesso()) {
+        <div class="alerta alerta-sucesso" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                <polyline points="22 4 12 14.01 9 11.01" />
+            </svg>
+            <span>Usuário cadastrado com sucesso! Redirecionando...</span>
+        </div>
+        }
+
+        @if (erro()) {
+        <div class="alerta alerta-erro" role="alert">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <span>{{ erro() }}</span>
+        </div>
+        }
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+            @if (previewFoto()) {
+            <div class="foto-preview-wrapper">
+                <img [src]="previewFoto()" alt="Preview da foto de perfil" />
+            </div>
+            }
+
+
+
+            <div class="campo-grupo">
+                <label for="nome" class="campo-label">
+                    Nome completo <span class="asterisco">*</span>
+                </label>
+                <div class="campo-input-wrapper">
+                    <svg class="campo-icone" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                    </svg>
+                    <input id="nome" type="text" formControlName="nome" class="campo-input"
+                        [class.campo-input--invalido]="campoInvalido('nome')" placeholder="Ex: João da Silva"
+                        autocomplete="name" />
+                </div>
+                @if (campoInvalido('nome')) {
+                <div class="campo-erro">
+                    @if (camposFormulario['nome'].errors?.['required']) { Nome é obrigatório. }
+                    @else if (camposFormulario['nome'].errors?.['minlength']) { Mínimo de 3 caracteres. }
+                </div>
+                }
+            </div>
+
+            <div class="campo-grupo">
+                <label for="email" class="campo-label">
+                    E-mail <span class="asterisco">*</span>
+                </label>
+                <div class="campo-input-wrapper">
+                    <svg class="campo-icone" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                        <polyline points="22,6 12,13 2,6" />
+                    </svg>
+                    <input id="email" type="email" formControlName="email" class="campo-input"
+                        [class.campo-input--invalido]="campoInvalido('email')" placeholder="Ex: joao@email.com"
+                        autocomplete="email" />
+                </div>
+                @if (campoInvalido('email')) {
+                <div class="campo-erro">
+                    @if (camposFormulario['email'].errors?.['required']) { E-mail é obrigatório. }
+                    @else if (camposFormulario['email'].errors?.['email']) { Informe um e-mail válido. }
+                </div>
+                }
+            </div>
+
+            <div class="campo-grid-2">
+
+                <div class="campo-grupo">
+                    <label for="senha" class="campo-label">
+                        Senha <span class="asterisco">*</span>
+                    </label>
+                    <div class="campo-input-wrapper">
+                        <svg class="campo-icone" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                        </svg>
+                        <input id="senha" [type]="mostrarSenha() ? 'text' : 'password'" formControlName="senha"
+                            class="campo-input campo-input--senha"
+                            [class.campo-input--invalido]="campoInvalido('senha')" placeholder="Mínimo 8 caracteres"
+                            autocomplete="new-password" />
+                        <button type="button" class="btn-toggle-senha" (click)="toggleMostrarSenha()"
+                            [attr.aria-label]="mostrarSenha() ? 'Ocultar senha' : 'Mostrar senha'">
+                            @if (mostrarSenha()) {
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
+                                <path
+                                    d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                                <line x1="1" y1="1" x2="23" y2="23" />
+                            </svg>
+                            } @else {
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                <circle cx="12" cy="12" r="3" />
+                            </svg>
+                            }
+                        </button>
+                    </div>
+                    @if (campoInvalido('senha')) {
+                    <div class="campo-erro">
+                        @if (camposFormulario['senha'].errors?.['required']) { Senha é obrigatória. }
+                        @else if (camposFormulario['senha'].errors?.['minlength']) { Mínimo de 8 caracteres. }
+                    </div>
+                    }
+                </div>
+
+                <div class="campo-grupo">
+                    <label for="confirmarSenha" class="campo-label">
+                        Confirmar senha <span class="asterisco">*</span>
+                    </label>
+                    <div class="campo-input-wrapper">
+                        <svg class="campo-icone" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                        </svg>
+                        <input id="confirmarSenha" [type]="mostrarSenha() ? 'text' : 'password'"
+                            formControlName="confirmarSenha" class="campo-input"
+                            [class.campo-input--invalido]="campoInvalido('confirmarSenha')" placeholder="Repita a senha"
+                            autocomplete="new-password" />
+                    </div>
+                    @if (campoInvalido('confirmarSenha')) {
+                    <div class="campo-erro">
+                        @if (camposFormulario['confirmarSenha'].errors?.['required']) { Confirmação é obrigatória. }
+                        @else if (camposFormulario['confirmarSenha'].errors?.['senhasDiferentes']) { As senhas não
+                        coincidem. }
+                    </div>
+                    }
+                </div>
+
+            </div>
+
+
+            <div class="campo-grid-2">
+
+                <div class="campo-grupo">
+                    <label for="telefone" class="campo-label">Telefone
+                        <span class="asterisco">*</span>
+                    </label>
+                    <div class="campo-input-wrapper">
+                        <svg class="campo-icone" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path
+                                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.26h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.4a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 21.5 16z" />
+                        </svg>
+                        <input id="telefone" type="tel" formControlName="telefone" class="campo-input"
+                            [class.campo-input--invalido]="campoInvalido('telefone')" placeholder="(11) 99999-9999"
+                            autocomplete="tel" />
+                    </div>
+                    @if (campoInvalido('telefone')) {
+                    <div class="campo-erro">
+                        @if (camposFormulario['telefone'].errors?.['pattern']) { Formato inválido. Ex: (11) 99999-9999 }
+                    </div>
+                    }
+                </div>
+
+                <div class="campo-grupo">
+                    <label for="endereco" class="campo-label">Endereço
+                        <span class="asterisco">*</span>
+                    </label>
+                    <div class="campo-input-wrapper">
+                        <svg class="campo-icone" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                            <circle cx="12" cy="10" r="3" />
+                        </svg>
+                        <input id="endereco" type="text" formControlName="endereco" class="campo-input"
+                            [class.campo-input--invalido]="campoInvalido('endereco')"
+                            placeholder="Rua, número, bairro..." autocomplete="street-address" />
+                    </div>
+                    @if (campoInvalido('endereco')) {
+                    <div class="campo-erro">
+                        @if (camposFormulario['endereco'].errors?.['maxlength']) { Máximo de 50 caracteres. }
+                    </div>
+                    }
+                    <div class="campo-dica">
+                        {{ form.get('endereco')?.value?.length ?? 0 }}/50 caracteres
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="campo-grupo">
+                <label for="fotoPerfil" class="campo-label">URL da foto de perfil
+                    <span class="asterisco">*</span>
+                </label>
+                <div class="campo-input-wrapper">
+                    <svg class="campo-icone" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                        <circle cx="8.5" cy="8.5" r="1.5" />
+                        <polyline points="21 15 16 10 5 21" />
+                    </svg>
+                    <input id="fotoPerfil" type="url" formControlName="fotoPerfil" class="campo-input"
+                        [class.campo-input--invalido]="campoInvalido('fotoPerfil')"
+                        placeholder="https://exemplo.com/foto.jpg" (input)="onFotoPerfilChange($event)" />
+                </div>
+                @if (campoInvalido('fotoPerfil')) {
+                <div class="campo-erro">
+                    @if (camposFormulario['fotoPerfil'].errors?.['maxlength']) { Máximo de 500 caracteres. }
+                </div>
+                }
+                <div class="campo-dica">Informe uma URL pública de imagem para pré-visualização.</div>
+            </div>
+
+            <div class="acoes">
+                <button type="button" class="btn btn-secundario" (click)="limparFormulario()" [disabled]="carregando()">
+                    Limpar
+                </button>
+                <button type="submit" class="btn btn-primario" [disabled]="carregando() || form.invalid">
+                    @if (carregando()) {
+                    <span class="spinner" aria-hidden="true"></span>
+                    Cadastrando...
+                    } @else {
+                    Cadastrar usuário
+                    }
+                </button>
+            </div>
+
+        </form>
+
+        <div class="card-rodape">
+            <a routerLink="/home" class="link-voltar">← Voltar para o início</a>
+        </div>
+
+    </div>
+</div>
