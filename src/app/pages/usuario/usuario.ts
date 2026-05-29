@@ -10,7 +10,6 @@ import {
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { UsuarioService } from '../../core/services/usuario';
-import { UsuarioCadastro } from '../../core/models/usuario';
 
 @Component({
   selector: 'app-cadastro-usuario',
@@ -26,6 +25,7 @@ export class CadastroUsuarioComponent {
   erro = signal<string | null>(null);
   mostrarSenha = signal(false);
   previewFoto = signal<string | null>(null);
+  arquivoFoto = signal<File | null>(null); // ← novo
 
   constructor(
     private fb: FormBuilder,
@@ -39,8 +39,7 @@ export class CadastroUsuarioComponent {
         senha: ['', [Validators.required, Validators.minLength(8)]],
         confirmarSenha: ['', Validators.required],
         telefone: ['', [Validators.pattern(/^\(?\d{2}\)?[\s-]?\d{4,5}-?\d{4}$/)]],
-        endereco: ['', [Validators.maxLength(50)]],
-        fotoPerfil: ['', [Validators.maxLength(500)]]
+        endereco: ['', [Validators.maxLength(50)]]
       },
       { validators: this.senhasIguaisValidator }
     );
@@ -59,14 +58,17 @@ export class CadastroUsuarioComponent {
   toggleMostrarSenha(): void {
     this.mostrarSenha.update(v => !v);
   }
-  
+
   onFotoPerfilChange(event: Event): void {
     const input = event.target as HTMLInputElement;
-    const url = input.value.trim();
-    this.form.patchValue({ fotoPerfil: url });
-    this.previewFoto.set(url || null);
+    const arquivo = input.files?.[0];
+    if (arquivo) {
+      this.arquivoFoto.set(arquivo);
+      const reader = new FileReader();
+      reader.onload = () => this.previewFoto.set(reader.result as string);
+      reader.readAsDataURL(arquivo);
+    }
   }
-
 
   get camposFormulario() {
     return this.form.controls;
@@ -87,29 +89,30 @@ export class CadastroUsuarioComponent {
     this.erro.set(null);
 
     const { confirmarSenha, ...dadosCadastro } = this.form.value;
-    const payload: UsuarioCadastro = {
-      nome: dadosCadastro.nome,
-      email: dadosCadastro.email,
-      senha: dadosCadastro.senha,
-      telefone: dadosCadastro.telefone || undefined,
-      endereco: dadosCadastro.endereco || undefined,
-      fotoPerfil: dadosCadastro.fotoPerfil || undefined
-    };
 
-    this.usuarioService.cadastrar(payload).subscribe({
+    const formData = new FormData();
+    formData.append('nome', dadosCadastro.nome);
+    formData.append('email', dadosCadastro.email);
+    formData.append('senha', dadosCadastro.senha);
+    if (dadosCadastro.telefone) formData.append('telefone', dadosCadastro.telefone);
+    if (dadosCadastro.endereco) formData.append('endereco', dadosCadastro.endereco);
+    if (this.arquivoFoto()) formData.append('file', this.arquivoFoto()!);
+
+    this.usuarioService.cadastrar(formData).subscribe({
       next: () => {
         this.carregando.set(false);
         this.sucesso.set(true);
         this.form.reset();
         this.previewFoto.set(null);
+        this.arquivoFoto.set(null);
         setTimeout(() => this.router.navigate(['/usuarios']), 2000);
       },
-      error: (err: { status: number; }) => {
+      error: (err: { status: number }) => {
         this.carregando.set(false);
         if (err.status === 409) {
           this.erro.set('Este e-mail já está cadastrado no sistema.');
         } else if (err.status === 0) {
-          this.erro.set('Não foi possível conectar ao servidor. Verifique sua conexão.');
+          this.erro.set('Não foi possível conectar ao servidor.');
         } else {
           this.erro.set('Ocorreu um erro ao cadastrar. Tente novamente.');
         }
@@ -122,5 +125,6 @@ export class CadastroUsuarioComponent {
     this.erro.set(null);
     this.sucesso.set(false);
     this.previewFoto.set(null);
+    this.arquivoFoto.set(null);
   }
 }
