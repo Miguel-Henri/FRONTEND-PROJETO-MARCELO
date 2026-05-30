@@ -25,7 +25,7 @@ export class CadastroUsuarioComponent {
   erro = signal<string | null>(null);
   mostrarSenha = signal(false);
   previewFoto = signal<string | null>(null);
-  arquivoFoto = signal<File | null>(null); // ← novo
+  arquivoFoto = signal<File | null>(null);
 
   constructor(
     private fb: FormBuilder,
@@ -90,15 +90,38 @@ export class CadastroUsuarioComponent {
 
     const { confirmarSenha, ...dadosCadastro } = this.form.value;
 
-    const formData = new FormData();
-    formData.append('nome', dadosCadastro.nome);
-    formData.append('email', dadosCadastro.email);
-    formData.append('senha', dadosCadastro.senha);
-    if (dadosCadastro.telefone) formData.append('telefone', dadosCadastro.telefone);
-    if (dadosCadastro.endereco) formData.append('endereco', dadosCadastro.endereco);
-    if (this.arquivoFoto()) formData.append('file', this.arquivoFoto()!);
+    // 1. Se tem foto, faz upload primeiro
+    if (this.arquivoFoto()) {
+      const formData = new FormData();
+      formData.append('file', this.arquivoFoto()!);
 
-    this.usuarioService.cadastrar(formData).subscribe({
+      this.usuarioService.uploadFoto(formData).subscribe({
+        next: (nomeArquivo: string) => {
+          // 2. Com o nome retornado, cadastra como JSON
+          this.cadastrarUsuario(dadosCadastro, nomeArquivo);
+        },
+        error: () => {
+          this.carregando.set(false);
+          this.erro.set('Erro ao enviar a foto.');
+        }
+      });
+    } else {
+      // sem foto, cadastra direto
+      this.cadastrarUsuario(dadosCadastro, null);
+    }
+  }
+
+  private cadastrarUsuario(dados: any, fotoPerfil: string | null): void {
+    const payload = {
+      nome: dados.nome,
+      email: dados.email,
+      senha: dados.senha,
+      telefone: dados.telefone || undefined,
+      endereco: dados.endereco || undefined,
+      fotoPerfil: fotoPerfil || undefined
+    };
+
+    this.usuarioService.cadastrar(payload).subscribe({
       next: () => {
         this.carregando.set(false);
         this.sucesso.set(true);
