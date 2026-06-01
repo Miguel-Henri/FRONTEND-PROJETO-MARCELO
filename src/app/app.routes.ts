@@ -1,14 +1,35 @@
 import { Routes } from '@angular/router';
-import { Home } from './pages/home/home';
-import { CadastroUsuarioComponent } from './pages/usuario/usuario';
+
+import { UsuarioComponent } from './pages/usuario/usuario.component';
+
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
+
+import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
 
 export const routes: Routes = [
-    {
-        path: '',
-        component: Home
-    },
-    {
-        path: 'usuario/cadastro',
-        component: CadastroUsuarioComponent
-    },
+
+  {
+    path: '',
+    redirectTo: 'dashboard',
+    pathMatch: 'full'
+  },
+
+  {
+    path: 'usuario/cadastro',
+    component: UsuarioComponent
+  },
+
+  {
+    path: '',
+    component: MainLayoutComponent,
+    children: [
+
+      {
+        path: 'dashboard',
+        component: DashboardComponent
+      }
+
+    ]
+  }
+
 ];
