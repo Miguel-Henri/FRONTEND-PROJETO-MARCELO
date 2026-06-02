@@ -7,8 +7,8 @@ import { Observable } from 'rxjs';
 })
 export class UsuarioService {
 
-  private readonly apiUrl = 'http://localhost:8080/api/usuarios/novo'; 
-  private readonly uploadUrl = 'http://localhost:8080/upload';
+  private readonly apiUrl = 'https://spookily-riot-scientist.ngrok-free.dev/api/usuarios/novo'; 
+  private readonly uploadUrl = 'https://spookily-riot-scientist.ngrok-free.dev//upload';
 
   constructor(private http: HttpClient) { } // ← faltava
 
