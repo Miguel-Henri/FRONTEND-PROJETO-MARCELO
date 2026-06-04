@@ -1,12 +1,11 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { ExtratoService, Lancamento } from '../../core/services/extrato.service';
 @Component({
   selector: 'app-extrato',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './extrato.html',
   styleUrl: './extrato.css'
 })
@@ -22,6 +21,7 @@ export class ExtratoComponent implements OnInit {
   totalItens = signal(0);
 
   totalPaginas = computed(() => Math.ceil(this.totalItens() / this.itensPorPagina));
+  ultimoItem = computed(() => Math.min(this.paginaAtual() * this.itensPorPagina, this.totalItens()));
 
   paginas = computed(() => {
     const total = this.totalPaginas();

@@ -1,35 +1,25 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  ReactiveFormsModule,
-  FormBuilder,
-  FormGroup,
-  Validators
-} from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { TransferenciaService } from '../../core/services/transferencia.service';
+import { DepositoService } from '../../core/services/deposito.service';
 
 @Component({
-  selector: 'app-transferencia',
+  selector: 'app-deposito',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
-  templateUrl: './transferencia.html',
-  styleUrl: './transferencia.css'
+  templateUrl: './deposito.html',
+  styleUrl: './deposito.css'
 })
-export class TransferenciaComponent {
+export class DepositoComponent {
   form: FormGroup;
   carregando = signal(false);
   sucesso = signal(false);
   erro = signal<string | null>(null);
 
-  constructor(
-    private fb: FormBuilder,
-    private transferenciaService: TransferenciaService
-  ) {
+  constructor(private fb: FormBuilder, private depositoService: DepositoService) {
     this.form = this.fb.group({
-      contaDestino: ['', [Validators.required, Validators.pattern(/^\d{5,10}$/)]],
-      valor: [null, [Validators.required, Validators.min(0.01), Validators.max(50000)]],
-      descricao: ['', [Validators.maxLength(100)]]
+      valor: [null, [Validators.required, Validators.min(0.01), Validators.max(50000)]]
     });
   }
 
@@ -52,7 +42,7 @@ export class TransferenciaComponent {
     this.erro.set(null);
     this.sucesso.set(false);
 
-    this.transferenciaService.realizar(this.form.value).subscribe({
+    this.depositoService.realizar(this.form.value.valor).subscribe({
       next: () => {
         this.carregando.set(false);
         this.sucesso.set(true);
@@ -61,19 +51,17 @@ export class TransferenciaComponent {
       error: (err: { status: number }) => {
         this.carregando.set(false);
         if (err.status === 404) {
-          this.erro.set('Conta de destino não encontrada.');
-        } else if (err.status === 422) {
-          this.erro.set('Saldo insuficiente para realizar a transferência.');
+          this.erro.set('Conta não encontrada.');
         } else if (err.status === 0) {
           this.erro.set('Não foi possível conectar ao servidor.');
         } else {
-          this.erro.set('Erro ao realizar a transferência. Tente novamente.');
+          this.erro.set('Erro ao realizar o depósito. Tente novamente.');
         }
       }
     });
   }
 
-  nova(): void {
+  novo(): void {
     this.form.reset();
     this.sucesso.set(false);
     this.erro.set(null);

@@ -1,6 +1,5 @@
 <div class="extrato-wrapper">
 
-  <!-- Cabeçalho -->
   <div class="extrato-header">
     <div class="header-titulo">
       <div class="header-icon">
@@ -20,7 +19,6 @@
     </div>
   </div>
 
-  <!-- Filtro de período -->
   <div class="filtro-card">
     <form [formGroup]="form" (ngSubmit)="onFiltrar()" class="filtro-form">
       <div class="filtro-grupo">
@@ -67,7 +65,6 @@
     </form>
   </div>
 
-  <!-- Erro -->
   @if (erro()) {
   <div class="alerta alerta-erro" role="alert">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -79,7 +76,6 @@
   </div>
   }
 
-  <!-- Tabela -->
   <div class="tabela-card">
 
     @if (carregando()) {
@@ -115,7 +111,7 @@
             <td>
               <span class="badge-tipo" [class.badge-credito]="item.tipo === 'CREDITO'"
                 [class.badge-debito]="item.tipo === 'DEBITO'">
-                {{ item.tipo === 'CREDITO' ? 'Crédito' : 'Débito' }}
+                {{ item.tipo === 'CREDITO' ? 'Entrada' : 'Saída' }}
               </span>
             </td>
             <td class="col-valor" [class.valor-credito]="item.tipo === 'CREDITO'"
@@ -128,11 +124,10 @@
       </table>
     </div>
 
-    <!-- Paginação -->
     @if (totalPaginas() > 1) {
     <div class="paginacao">
       <span class="paginacao-info">
-        {{ (paginaAtual() - 1) * 10 + 1 }}–{{ [paginaAtual() * 10, totalItens()] | min }} de {{ totalItens() }} lançamentos
+        {{ (paginaAtual() - 1) * 10 + 1 }}–{{ ultimoItem() }} de {{ totalItens() }} lançamentos
       </span>
       <div class="paginacao-controles">
         <button class="pag-btn" (click)="anterior()" [disabled]="paginaAtual() === 1" aria-label="Página anterior">

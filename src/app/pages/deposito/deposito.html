@@ -1,0 +1,107 @@
+<div class="cadastro-wrapper">
+  <div class="cadastro-card">
+
+    <div class="card-header">
+      <div class="header-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+      </div>
+      <h1>Depósito</h1>
+      <p>Adicione saldo à sua conta</p>
+    </div>
+
+    @if (sucesso()) {
+    <div class="alerta alerta-sucesso" role="alert">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+        <polyline points="22 4 12 14.01 9 11.01" />
+      </svg>
+      <div>
+        <strong>Depósito realizado com sucesso!</strong>
+        <span> O saldo foi adicionado à sua conta.</span>
+      </div>
+    </div>
+    }
+
+    @if (erro()) {
+    <div class="alerta alerta-erro" role="alert">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="8" x2="12" y2="12" />
+        <line x1="12" y1="16" x2="12.01" y2="16" />
+      </svg>
+      <span>{{ erro() }}</span>
+    </div>
+    }
+
+    @if (!sucesso()) {
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+      <div class="campo-grupo">
+        <label for="valor" class="campo-label">
+          Valor <span class="asterisco">*</span>
+        </label>
+        <div class="campo-input-wrapper">
+          <svg class="campo-icone" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="1" x2="12" y2="23" />
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+          </svg>
+          <input id="valor" type="number" formControlName="valor" class="campo-input"
+            [class.campo-input--invalido]="campoInvalido('valor')"
+            placeholder="0,00"
+            step="0.01" min="0.01" />
+        </div>
+        @if (campoInvalido('valor')) {
+        <div class="campo-erro">
+          @if (camposFormulario['valor'].errors?.['required']) { Valor é obrigatório. }
+          @else if (camposFormulario['valor'].errors?.['min']) { O valor mínimo é R$ 0,01. }
+          @else if (camposFormulario['valor'].errors?.['max']) { O valor máximo por depósito é R$ 50.000,00. }
+        </div>
+        }
+        <div class="campo-dica">Limite por operação: R$ 50.000,00</div>
+      </div>
+
+      <div class="acoes">
+        <button type="button" class="btn btn-secundario" routerLink="/dashboard" [disabled]="carregando()">
+          Cancelar
+        </button>
+        <button type="submit" class="btn btn-primario" [disabled]="carregando() || form.invalid">
+          @if (carregando()) {
+          <span class="spinner" aria-hidden="true"></span>
+          Depositando...
+          } @else {
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" width="16" height="16">
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          Depositar
+          }
+        </button>
+      </div>
+
+    </form>
+    } @else {
+    <div class="sucesso-acoes">
+      <button class="btn btn-primario" (click)="novo()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" width="16" height="16">
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+        Novo Depósito
+      </button>
+      <a routerLink="/dashboard" class="btn btn-secundario">Ir para Dashboard</a>
+    </div>
+    }
+
+    <div class="card-rodape">
+      <a routerLink="/dashboard" class="link-voltar">← Voltar para o Dashboard</a>
+    </div>
+
+  </div>
+</div>
