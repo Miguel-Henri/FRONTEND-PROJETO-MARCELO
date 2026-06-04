@@ -2,8 +2,7 @@ import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { ExtratoService, Lancamento } from '../../core/services/extrato';
-
+import { ExtratoService, Lancamento } from '../../core/services/extrato.service';
 @Component({
   selector: 'app-extrato',
   standalone: true,
