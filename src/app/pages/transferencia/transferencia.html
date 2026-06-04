@@ -1,0 +1,151 @@
+<div class="cadastro-wrapper">
+  <div class="cadastro-card">
+
+    <div class="card-header">
+      <div class="header-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13" />
+          <polygon points="22 2 15 22 11 13 2 9 22 2" />
+        </svg>
+      </div>
+      <h1>Nova Transferência</h1>
+      <p>Envie dinheiro para outra conta de forma rápida e segura</p>
+    </div>
+
+    @if (sucesso()) {
+    <div class="alerta alerta-sucesso" role="alert">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+        <polyline points="22 4 12 14.01 9 11.01" />
+      </svg>
+      <div>
+        <strong>Transferência realizada com sucesso!</strong>
+        <span> O valor foi enviado para a conta de destino.</span>
+      </div>
+    </div>
+    }
+
+    @if (erro()) {
+    <div class="alerta alerta-erro" role="alert">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="8" x2="12" y2="12" />
+        <line x1="12" y1="16" x2="12.01" y2="16" />
+      </svg>
+      <span>{{ erro() }}</span>
+    </div>
+    }
+
+    @if (!sucesso()) {
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+      <div class="campo-grupo">
+        <label for="contaDestino" class="campo-label">
+          Conta de destino <span class="asterisco">*</span>
+        </label>
+        <div class="campo-input-wrapper">
+          <svg class="campo-icone" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <rect x="2" y="5" width="20" height="14" rx="2" />
+            <line x1="2" y1="10" x2="22" y2="10" />
+          </svg>
+          <input id="contaDestino" type="text" formControlName="contaDestino" class="campo-input"
+            [class.campo-input--invalido]="campoInvalido('contaDestino')"
+            placeholder="Número da conta (ex: 12345678)"
+            autocomplete="off" />
+        </div>
+        @if (campoInvalido('contaDestino')) {
+        <div class="campo-erro">
+          @if (camposFormulario['contaDestino'].errors?.['required']) { Conta de destino é obrigatória. }
+          @else if (camposFormulario['contaDestino'].errors?.['pattern']) { Informe um número de conta válido (5 a 10 dígitos). }
+        </div>
+        }
+      </div>
+
+      <div class="campo-grupo">
+        <label for="valor" class="campo-label">
+          Valor <span class="asterisco">*</span>
+        </label>
+        <div class="campo-input-wrapper">
+          <svg class="campo-icone" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="1" x2="12" y2="23" />
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+          </svg>
+          <input id="valor" type="number" formControlName="valor" class="campo-input"
+            [class.campo-input--invalido]="campoInvalido('valor')"
+            placeholder="0,00"
+            step="0.01" min="0.01" />
+        </div>
+        @if (campoInvalido('valor')) {
+        <div class="campo-erro">
+          @if (camposFormulario['valor'].errors?.['required']) { Valor é obrigatório. }
+          @else if (camposFormulario['valor'].errors?.['min']) { O valor mínimo é R$ 0,01. }
+          @else if (camposFormulario['valor'].errors?.['max']) { O valor máximo por transferência é R$ 50.000,00. }
+        </div>
+        }
+        <div class="campo-dica">Limite por operação: R$ 50.000,00</div>
+      </div>
+
+      <div class="campo-grupo">
+        <label for="descricao" class="campo-label">Descrição <span class="badge-opcional-inline">opcional</span></label>
+        <div class="campo-input-wrapper">
+          <svg class="campo-icone" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+          </svg>
+          <input id="descricao" type="text" formControlName="descricao" class="campo-input"
+            [class.campo-input--invalido]="campoInvalido('descricao')"
+            placeholder="Ex: Pagamento aluguel, presente..." />
+        </div>
+        @if (campoInvalido('descricao')) {
+        <div class="campo-erro">
+          @if (camposFormulario['descricao'].errors?.['maxlength']) { Máximo de 100 caracteres. }
+        </div>
+        }
+        <div class="campo-dica">
+          {{ form.get('descricao')?.value?.length ?? 0 }}/100 caracteres
+        </div>
+      </div>
+
+      <div class="acoes">
+        <button type="button" class="btn btn-secundario" routerLink="/dashboard" [disabled]="carregando()">
+          Cancelar
+        </button>
+        <button type="submit" class="btn btn-primario" [disabled]="carregando() || form.invalid">
+          @if (carregando()) {
+          <span class="spinner" aria-hidden="true"></span>
+          Enviando...
+          } @else {
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" width="16" height="16">
+            <line x1="22" y1="2" x2="11" y2="13" />
+            <polygon points="22 2 15 22 11 13 2 9 22 2" />
+          </svg>
+          Transferir
+          }
+        </button>
+      </div>
+
+    </form>
+    } @else {
+    <div class="sucesso-acoes">
+      <button class="btn btn-primario" (click)="nova()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" width="16" height="16">
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+        Nova Transferência
+      </button>
+      <a routerLink="/dashboard" class="btn btn-secundario">Ir para Dashboard</a>
+    </div>
+    }
+
+    <div class="card-rodape">
+      <a routerLink="/dashboard" class="link-voltar">← Voltar para o Dashboard</a>
+    </div>
+
+  </div>
+</div>
