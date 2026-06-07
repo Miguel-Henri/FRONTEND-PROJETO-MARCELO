@@ -1,0 +1,162 @@
+<div class="extrato-wrapper">
+
+  <div class="extrato-header">
+    <div class="header-titulo">
+      <div class="header-icon">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+          <polyline points="14 2 14 8 20 8" />
+          <line x1="16" y1="13" x2="8" y2="13" />
+          <line x1="16" y1="17" x2="8" y2="17" />
+          <polyline points="10 9 9 9 8 9" />
+        </svg>
+      </div>
+      <div>
+        <h1>Extrato</h1>
+        <p>Consulte suas movimentações por período</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="filtro-card">
+    <form [formGroup]="form" (ngSubmit)="onFiltrar()" class="filtro-form">
+      <div class="filtro-grupo">
+        <label for="dataInicio" class="filtro-label">Data inicial</label>
+        <div class="campo-input-wrapper">
+          <svg class="campo-icone" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+            <line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+          </svg>
+          <input id="dataInicio" type="date" formControlName="dataInicio" class="campo-input" />
+        </div>
+      </div>
+
+      <div class="filtro-grupo">
+        <label for="dataFim" class="filtro-label">Data final</label>
+        <div class="campo-input-wrapper">
+          <svg class="campo-icone" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+            <line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+          </svg>
+          <input id="dataFim" type="date" formControlName="dataFim" class="campo-input" />
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primario" [disabled]="carregando()">
+        @if (carregando()) {
+          <span class="spinner" aria-hidden="true"></span>
+          Buscando...
+        } @else {
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" width="15" height="15">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          Filtrar
+        }
+      </button>
+    </form>
+  </div>
+
+  @if (erro()) {
+  <div class="alerta alerta-erro" role="alert">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="8" x2="12" y2="12" />
+      <line x1="12" y1="16" x2="12.01" y2="16" />
+    </svg>
+    <span>{{ erro() }}</span>
+  </div>
+  }
+
+  <div class="tabela-card">
+
+    @if (carregando()) {
+    <div class="estado-vazio">
+      <span class="spinner-dark"></span>
+      <span class="estado-texto">Carregando lançamentos...</span>
+    </div>
+    } @else if (lancamentos().length === 0) {
+    <div class="estado-vazio">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1"
+        stroke-width="1.5" width="48" height="48">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <polyline points="14 2 14 8 20 8" />
+      </svg>
+      <span class="estado-texto">Nenhum lançamento encontrado para o período.</span>
+    </div>
+    } @else {
+    <div class="tabela-wrapper">
+      <table class="tabela">
+        <thead>
+          <tr>
+            <th>Data / Hora</th>
+            <th>Descrição</th>
+            <th>Tipo</th>
+            <th class="col-valor">Valor</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of lancamentos(); track item.id) {
+          <tr>
+            <td class="col-data">{{ formatarDataHora(item.data) }}</td>
+            <td class="col-descricao">{{ item.descricao }}</td>
+            <td>
+              <span class="badge-tipo" [class.badge-credito]="item.tipo === 'CREDITO'"
+                [class.badge-debito]="item.tipo === 'DEBITO'">
+                {{ item.tipo === 'CREDITO' ? 'Entrada' : 'Saída' }}
+              </span>
+            </td>
+            <td class="col-valor" [class.valor-credito]="item.tipo === 'CREDITO'"
+              [class.valor-debito]="item.tipo === 'DEBITO'">
+              {{ item.tipo === 'DEBITO' ? '-' : '+' }}{{ formatarValor(item.valor) }}
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (totalPaginas() > 1) {
+    <div class="paginacao">
+      <span class="paginacao-info">
+        {{ (paginaAtual() - 1) * 10 + 1 }}–{{ ultimoItem() }} de {{ totalItens() }} lançamentos
+      </span>
+      <div class="paginacao-controles">
+        <button class="pag-btn" (click)="anterior()" [disabled]="paginaAtual() === 1" aria-label="Página anterior">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" width="14" height="14">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
+
+        @for (p of paginas(); track $index) {
+          @if (isEllipsis(p)) {
+            <span class="pag-ellipsis">…</span>
+          } @else {
+            <button class="pag-btn" [class.pag-btn--ativo]="p === paginaAtual()" (click)="irParaPagina(p)">
+              {{ p }}
+            </button>
+          }
+        }
+
+        <button class="pag-btn" (click)="proximo()" [disabled]="paginaAtual() === totalPaginas()" aria-label="Próxima página">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" width="14" height="14">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
+      </div>
+    </div>
+    }
+    }
+
+  </div>
+</div>
