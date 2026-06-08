@@ -1,0 +1,92 @@
+.gerente {
+  padding: 32px;
+}
+
+.gerente h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1e3a8a;
+  margin-bottom: 4px;
+}
+
+.gerente h2 {
+  font-size: 1rem;
+  font-weight: 400;
+  color: #555;
+  margin-bottom: 24px;
+}
+
+.tabela-container {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tabela {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tabela thead {
+  background: #eff6ff;
+}
+
+.tabela th {
+  text-align: left;
+  padding: 14px 20px;
+  font-size: 0.85rem;
+  color: #1e3a8a;
+  font-weight: 600;
+  border-bottom: 1px solid #ddd;
+}
+
+.tabela td {
+  padding: 14px 20px;
+  font-size: 0.9rem;
+  color: #333;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.tabela tr:last-child td {
+  border-bottom: none;
+}
+
+.acoes {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-aprovar,
+.btn-rejeitar {
+  padding: 6px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.btn-aprovar {
+  background: #1e3a8a;
+  color: white;
+}
+
+.btn-aprovar:hover {
+  background: #1e40af;
+}
+
+.btn-rejeitar {
+  background: white;
+  color: #dc2626;
+  border: 1px solid #dc2626;
+}
+
+.btn-rejeitar:hover {
+  background: #fef2f2;
+}
+
+.erro {
+  color: #dc2626;
+  font-size: 0.9rem;
+}
