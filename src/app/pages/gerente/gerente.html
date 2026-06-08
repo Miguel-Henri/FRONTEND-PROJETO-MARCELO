@@ -1,0 +1,37 @@
+<section class="gerente">
+
+  <h1>Área do Gerente</h1>
+  <h2>Contas Pendentes de Aprovação</h2>
+
+  <p *ngIf="carregando()">Carregando...</p>
+  <p *ngIf="erro()" class="erro">{{ erro() }}</p>
+
+  <p *ngIf="!carregando() && contas().length === 0">
+    Nenhuma conta pendente no momento.
+  </p>
+
+  <div class="tabela-container" *ngIf="contas().length > 0">
+    <table class="tabela">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>E-mail</th>
+          <th>Data de Solicitação</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let conta of contas()">
+          <td>{{ conta.nomeUsuario }}</td>
+          <td>{{ conta.email }}</td>
+          <td>{{ conta.dataSolicitacao | date:'dd/MM/yyyy' }}</td>
+          <td class="acoes">
+            <button class="btn-aprovar" (click)="aprovar(conta.id)">Aprovar</button>
+            <button class="btn-rejeitar" (click)="rejeitar(conta.id)">Rejeitar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</section>
