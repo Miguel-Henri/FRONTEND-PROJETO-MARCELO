@@ -6,6 +6,7 @@ import { DepositoComponent } from './pages/deposito/deposito.component';
 import { PerfilComponent } from './pages/perfil/perfil.component';
 import { ExtratoComponent } from './pages/extrato/extrato.component';
 import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
+import { InvestimentosComponent } from './pages/investimento/investimento';
 import { GerenteComponent } from './pages/gerente/gerente.component';
 import { gerenteGuard } from './core/guards/gerente.guard';
 
@@ -21,6 +22,19 @@ export const routes: Routes = [
       { path: 'deposito', component: DepositoComponent },
       { path: 'perfil', component: PerfilComponent },
       { path: 'extrato', component: ExtratoComponent },
+      {
+        path: 'perfil',
+        component: PerfilComponent
+      },
+
+      {
+        path: 'extrato',
+        component: ExtratoComponent
+      },
+      {
+        path: 'investimentos',
+        component: InvestimentosComponent
+      },
       {
         path: 'gerente',
         component: GerenteComponent,
