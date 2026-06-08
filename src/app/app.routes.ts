@@ -7,6 +7,7 @@ import { DepositoComponent } from './pages/deposito/deposito.component';
 import { PerfilComponent } from './pages/perfil/perfil.component';
 import { ExtratoComponent } from './pages/extrato/extrato.component';
 import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
+import { InvestimentosComponent } from './pages/investimento/investimento';
 
 export const routes: Routes = [
 
@@ -49,6 +50,10 @@ export const routes: Routes = [
       {
         path: 'extrato',
         component: ExtratoComponent
+      },
+      {
+        path: 'investimentos',
+        component: InvestimentosComponent
       }
 
     ]
