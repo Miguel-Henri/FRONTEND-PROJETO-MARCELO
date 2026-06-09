@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { CONTA_ATIVA } from '../conta-ativa';
+import { AuthService } from './auth.service';
 
 export interface Lancamento {
   id: number;
@@ -26,19 +26,21 @@ export interface ExtratoFiltro {
 
 const TIPOS_CREDITO = new Set(['DEPOSITO', 'TRANSFERENCIA_RECEBIDA']);
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class ExtratoService {
 
   private readonly apiUrl = 'http://localhost:8080/api/contas/extrato';
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private auth: AuthService
+  ) {}
 
   buscar(filtro: ExtratoFiltro): Observable<ExtratoResposta> {
+    const conta = this.auth.contaAtiva;
     const params = new HttpParams()
-      .set('numeroConta', CONTA_ATIVA.numeroConta.toString())
-      .set('agencia', CONTA_ATIVA.agencia.toString())
+      .set('numeroConta', conta!.numeroConta.toString())
+      .set('agencia', conta!.agencia.toString())
       .set('dataInicio', `${filtro.dataInicio}T00:00:00`)
       .set('dataFim', `${filtro.dataFim}T23:59:59`)
       .set('page', (filtro.pagina - 1).toString())

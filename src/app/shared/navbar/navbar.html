@@ -5,13 +5,9 @@
   </div>
 
   <div class="usuario">
-
-    <span>{{ usuario.nome }}</span>
-
-    <img
-      [src]="usuario.foto"
-      alt="Foto usuário">
-
+    <span>{{ nomeUsuario }}</span>
+    <img [src]="fotoUsuario" alt="Foto usuário">
+    <button class="btn-logout" (click)="logout()">Sair</button>
   </div>
 
 </header>
