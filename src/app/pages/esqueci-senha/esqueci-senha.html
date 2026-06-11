@@ -1,0 +1,332 @@
+<div class="recuperacao-wrapper">
+  <div class="recuperacao-card">
+
+    <!-- ───── Cabeçalho ───── -->
+    <div class="card-header">
+      <div class="header-icon">
+        @switch (etapa()) {
+          @case ('sucesso') {
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+          }
+          @case ('token') {
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+            </svg>
+          }
+          @case ('nova-senha') {
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          }
+          @default {
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+          }
+        }
+      </div>
+
+      @switch (etapa()) {
+        @case ('email') {
+          <h1>Esqueci minha senha</h1>
+          <p>Informe o e-mail cadastrado para receber o código de recuperação</p>
+        }
+        @case ('token') {
+          <h1>Verifique seu e-mail</h1>
+          <p>Digite o código de 6 dígitos enviado para <strong>{{ emailSalvo() }}</strong></p>
+        }
+        @case ('nova-senha') {
+          <h1>Nova senha</h1>
+          <p>Crie uma senha forte para sua conta</p>
+        }
+        @case ('sucesso') {
+          <h1>Senha redefinida!</h1>
+          <p>Sua senha foi alterada com sucesso</p>
+        }
+      }
+    </div>
+
+    <!-- ───── Indicador de etapas ───── -->
+    @if (etapa() !== 'sucesso') {
+      <div class="etapas">
+        <div class="etapa-item" [class.ativa]="etapa() === 'email'" [class.concluida]="etapa() === 'token' || etapa() === 'nova-senha'">
+          <div class="etapa-bolinha">
+            @if (etapa() === 'token' || etapa() === 'nova-senha') {
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            } @else {
+              1
+            }
+          </div>
+          <span>E-mail</span>
+        </div>
+        <div class="etapa-linha" [class.concluida]="etapa() === 'token' || etapa() === 'nova-senha'"></div>
+        <div class="etapa-item" [class.ativa]="etapa() === 'token'" [class.concluida]="etapa() === 'nova-senha'">
+          <div class="etapa-bolinha">
+            @if (etapa() === 'nova-senha') {
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            } @else {
+              2
+            }
+          </div>
+          <span>Código</span>
+        </div>
+        <div class="etapa-linha" [class.concluida]="etapa() === 'nova-senha'"></div>
+        <div class="etapa-item" [class.ativa]="etapa() === 'nova-senha'">
+          <div class="etapa-bolinha">3</div>
+          <span>Nova senha</span>
+        </div>
+      </div>
+    }
+
+    <!-- ───── Alerta de erro ───── -->
+    @if (erro()) {
+      <div class="alerta alerta-erro" role="alert">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span>{{ erro() }}</span>
+      </div>
+    }
+
+    <!-- ───── Etapa 1: E-mail ───── -->
+    @if (etapa() === 'email') {
+      <form [formGroup]="formEmail" (ngSubmit)="enviarEmail()" novalidate class="form-corpo">
+
+        <div class="campo-grupo">
+          <label for="email" class="campo-label">
+            E-mail <span class="asterisco">*</span>
+          </label>
+          <div class="campo-input-wrapper">
+            <svg class="campo-icone" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+            <input id="email" type="email" formControlName="email" class="campo-input"
+              [class.campo-input--invalido]="campoInvalidoEmail('email')"
+              placeholder="seu@email.com"
+              autocomplete="email" />
+          </div>
+          @if (campoInvalidoEmail('email')) {
+            <div class="campo-erro">
+              @if (formEmail.get('email')?.errors?.['required']) { E-mail é obrigatório. }
+              @if (formEmail.get('email')?.errors?.['email']) { Informe um e-mail válido. }
+            </div>
+          }
+        </div>
+
+        <button type="submit" class="btn-primario" [disabled]="carregando()">
+          @if (carregando()) {
+            <span class="spinner"></span> Enviando...
+          } @else {
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="22" y1="2" x2="11" y2="13"/>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+            Enviar código de recuperação
+          }
+        </button>
+
+        <div class="rodape-form">
+          <a routerLink="/" class="link-voltar">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="19" y1="12" x2="5" y2="12"/>
+              <polyline points="12 19 5 12 12 5"/>
+            </svg>
+            Voltar para o login
+          </a>
+        </div>
+      </form>
+    }
+
+    <!-- ───── Etapa 2: Token ───── -->
+    @if (etapa() === 'token') {
+      <form [formGroup]="formToken" (ngSubmit)="confirmarToken()" novalidate class="form-corpo">
+
+        <div class="info-email">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <p>Verifique a caixa de entrada (e o spam) de <strong>{{ emailSalvo() }}</strong>. O código expira em 15 minutos.</p>
+        </div>
+
+        <div class="campo-grupo">
+          <label for="token" class="campo-label">
+            Código de 6 dígitos <span class="asterisco">*</span>
+          </label>
+          <div class="campo-input-wrapper">
+            <svg class="campo-icone" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+            </svg>
+            <input id="token" type="text" formControlName="token" class="campo-input campo-token"
+              [class.campo-input--invalido]="campoInvalidoToken('token')"
+              placeholder="000000"
+              maxlength="6"
+              inputmode="numeric"
+              autocomplete="one-time-code" />
+          </div>
+          @if (campoInvalidoToken('token')) {
+            <div class="campo-erro">
+              @if (formToken.get('token')?.errors?.['required']) { O código é obrigatório. }
+              @if (formToken.get('token')?.errors?.['pattern']) { Digite os 6 dígitos do código. }
+            </div>
+          }
+        </div>
+
+        <button type="submit" class="btn-primario">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 11 12 14 22 4"/>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+          </svg>
+          Confirmar código
+        </button>
+
+        <div class="rodape-form">
+          <button type="button" class="link-voltar" (click)="voltarParaEmail()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="19" y1="12" x2="5" y2="12"/>
+              <polyline points="12 19 5 12 12 5"/>
+            </svg>
+            Reenviar código
+          </button>
+        </div>
+      </form>
+    }
+
+    <!-- ───── Etapa 3: Nova senha ───── -->
+    @if (etapa() === 'nova-senha') {
+      <form [formGroup]="formNovaSenha" (ngSubmit)="redefinirSenha()" novalidate class="form-corpo">
+
+        <div class="campo-grupo">
+          <label for="novaSenha" class="campo-label">
+            Nova senha <span class="asterisco">*</span>
+          </label>
+          <div class="campo-input-wrapper">
+            <svg class="campo-icone" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <input id="novaSenha" [type]="mostrarSenha() ? 'text' : 'password'" formControlName="novaSenha"
+              class="campo-input campo-input--com-toggle"
+              [class.campo-input--invalido]="campoInvalidoSenha('novaSenha')"
+              placeholder="Mínimo 8 caracteres"
+              autocomplete="new-password" />
+            <button type="button" class="btn-toggle-senha" (click)="mostrarSenha.set(!mostrarSenha())" tabindex="-1">
+              @if (mostrarSenha()) {
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                  <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                  <line x1="1" y1="1" x2="23" y2="23"/>
+                </svg>
+              } @else {
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              }
+            </button>
+          </div>
+          @if (campoInvalidoSenha('novaSenha')) {
+            <div class="campo-erro">
+              @if (formNovaSenha.get('novaSenha')?.errors?.['required']) { Senha é obrigatória. }
+              @if (formNovaSenha.get('novaSenha')?.errors?.['minlength']) { A senha deve ter pelo menos 8 caracteres. }
+            </div>
+          }
+        </div>
+
+        <div class="campo-grupo">
+          <label for="confirmarSenha" class="campo-label">
+            Confirmar senha <span class="asterisco">*</span>
+          </label>
+          <div class="campo-input-wrapper">
+            <svg class="campo-icone" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <input id="confirmarSenha" [type]="mostrarConfirmar() ? 'text' : 'password'" formControlName="confirmarSenha"
+              class="campo-input campo-input--com-toggle"
+              [class.campo-input--invalido]="campoInvalidoSenha('confirmarSenha') || (formNovaSenha.errors?.['senhasDiferentes'] && formNovaSenha.get('confirmarSenha')?.touched)"
+              placeholder="Repita a nova senha"
+              autocomplete="new-password" />
+            <button type="button" class="btn-toggle-senha" (click)="mostrarConfirmar.set(!mostrarConfirmar())" tabindex="-1">
+              @if (mostrarConfirmar()) {
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                  <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                  <line x1="1" y1="1" x2="23" y2="23"/>
+                </svg>
+              } @else {
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              }
+            </button>
+          </div>
+          @if (formNovaSenha.errors?.['senhasDiferentes'] && formNovaSenha.get('confirmarSenha')?.touched) {
+            <div class="campo-erro">As senhas não conferem.</div>
+          }
+        </div>
+
+        <button type="submit" class="btn-primario" [disabled]="carregando()">
+          @if (carregando()) {
+            <span class="spinner"></span> Salvando...
+          } @else {
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+              <polyline points="17 21 17 13 7 13 7 21"/>
+              <polyline points="7 3 7 8 15 8"/>
+            </svg>
+            Salvar nova senha
+          }
+        </button>
+      </form>
+    }
+
+    <!-- ───── Etapa 4: Sucesso ───── -->
+    @if (etapa() === 'sucesso') {
+      <div class="sucesso-corpo">
+        <div class="sucesso-icone-grande">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+        </div>
+        <p>Sua senha foi redefinida com sucesso. Você já pode entrar na sua conta com a nova senha.</p>
+        <button type="button" class="btn-primario" (click)="irParaLogin()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+            <polyline points="10 17 15 12 10 7"/>
+            <line x1="15" y1="12" x2="3" y2="12"/>
+          </svg>
+          Ir para o login
+        </button>
+      </div>
+    }
+
+  </div>
+</div>
