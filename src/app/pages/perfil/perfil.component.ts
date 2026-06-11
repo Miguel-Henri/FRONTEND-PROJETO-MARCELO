@@ -8,6 +8,7 @@ import {
 } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { UsuarioService } from '../../core/services/usuario';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-perfil',
@@ -25,7 +26,8 @@ export class PerfilComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private usuarioService: UsuarioService
+    private usuarioService: UsuarioService,
+    private auth: AuthService
   ) {
     this.form = this.fb.group({
       telefone: ['', [Validators.pattern(/^\(?\d{2}\)?[\s-]?\d{4,5}-?\d{4}$/)]],
@@ -40,8 +42,13 @@ export class PerfilComponent implements OnInit {
 
   private carregarDados(): void {
     this.carregandoDados.set(true);
-    // Substitua pelo ID real do usuário logado (ex: via AuthService)
-    const idUsuario = 1;
+    // Usa o ID real do usuário logado via AuthService
+    const idUsuario = this.auth.usuarioId;
+    if (!idUsuario) {
+      this.erro.set('Usuário não autenticado.');
+      this.carregandoDados.set(false);
+      return;
+    }
     this.usuarioService.buscarPorId(idUsuario).subscribe({
       next: (usuario) => {
         this.form.patchValue({
@@ -77,7 +84,7 @@ export class PerfilComponent implements OnInit {
     this.erro.set(null);
     this.sucesso.set(false);
 
-    const idUsuario = 1;
+    const idUsuario = this.auth.usuarioId!;
     const payload = {
       telefone: this.form.value.telefone || undefined,
       email: this.form.value.email,

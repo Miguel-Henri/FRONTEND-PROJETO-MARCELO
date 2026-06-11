@@ -29,7 +29,15 @@ export class GerenteComponent implements OnInit {
     this.carregando.set(true);
     this.erro.set(null);
     this.gerenteService.listarContasPendentes().subscribe({
-      next: (contas: ContaPendente[]) => {
+      next: (page: any) => {
+        // O back retorna Page<ContaResumoDTO>, pegar .content
+        const contas: ContaPendente[] = (page.content ?? []).map((c: any) => ({
+          id: c.id,
+          nomeUsuario: c.nomeUsuario,
+          emailUsuario: c.emailUsuario,
+          dataCriacao: c.dataCriacao,
+          status: c.status
+        }));
         this.contas.set(contas);
         this.carregando.set(false);
       },
@@ -44,9 +52,7 @@ export class GerenteComponent implements OnInit {
     this.gerenteService.aprovarConta(id).subscribe({
       next: () => {
         this.toast.sucesso('Conta aprovada com sucesso!');
-        this.contas.update((lista: ContaPendente[]) =>
-          lista.filter((c: ContaPendente) => c.id !== id)
-        );
+        this.contas.update(lista => lista.filter(c => c.id !== id));
       },
       error: () => this.toast.erro('Erro ao aprovar conta.')
     });
@@ -56,9 +62,7 @@ export class GerenteComponent implements OnInit {
     this.gerenteService.rejeitarConta(id).subscribe({
       next: () => {
         this.toast.aviso('Conta rejeitada.');
-        this.contas.update((lista: ContaPendente[]) =>
-          lista.filter((c: ContaPendente) => c.id !== id)
-        );
+        this.contas.update(lista => lista.filter(c => c.id !== id));
       },
       error: () => this.toast.erro('Erro ao rejeitar conta.')
     });
