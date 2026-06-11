@@ -38,7 +38,7 @@ export const routes: Routes = [
       {
         path: 'gerente',
         component: GerenteComponent,
-        canActivate: [gerenteGuard]   // ← protege a rota
+        
       }
     ]
   }
