@@ -9,10 +9,12 @@ import { MainLayoutComponent } from './layout/main-layout/main-layout.component'
 import { InvestimentosComponent } from './pages/investimento/investimento';
 import { GerenteComponent } from './pages/gerente/gerente.component';
 import { gerenteGuard } from './core/guards/gerente.guard';
+import { EsqueciSenhaComponent } from './pages/esqueci-senha/esqueci-senha';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   { path: 'usuario/cadastro', component: CadastroUsuarioComponent },
+  { path: 'esqueci-senha', component: EsqueciSenhaComponent },
   {
     path: '',
     component: MainLayoutComponent,
@@ -22,23 +24,11 @@ export const routes: Routes = [
       { path: 'deposito', component: DepositoComponent },
       { path: 'perfil', component: PerfilComponent },
       { path: 'extrato', component: ExtratoComponent },
-      {
-        path: 'perfil',
-        component: PerfilComponent
-      },
-
-      {
-        path: 'extrato',
-        component: ExtratoComponent
-      },
-      {
-        path: 'investimentos',
-        component: InvestimentosComponent
-      },
+      { path: 'investimentos', component: InvestimentosComponent },
       {
         path: 'gerente',
         component: GerenteComponent,
-        
+        canActivate: [gerenteGuard]
       }
     ]
   }
