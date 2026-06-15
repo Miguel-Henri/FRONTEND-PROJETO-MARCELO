@@ -1,14 +1,10 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  ReactiveFormsModule,
-  FormBuilder,
-  FormGroup,
-  Validators
-} from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { UsuarioService } from '../../core/services/usuario';
 import { AuthService } from '../../core/services/auth.service';
+import { ToastService } from '../../shared/toast/toast.service';
 
 @Component({
   selector: 'app-perfil',
@@ -21,13 +17,12 @@ export class PerfilComponent implements OnInit {
   form: FormGroup;
   carregando = signal(false);
   carregandoDados = signal(true);
-  sucesso = signal(false);
-  erro = signal<string | null>(null);
 
   constructor(
     private fb: FormBuilder,
     private usuarioService: UsuarioService,
-    private auth: AuthService
+    private auth: AuthService,
+    private toast: ToastService
   ) {
     this.form = this.fb.group({
       telefone: ['', [Validators.pattern(/^\(?\d{2}\)?[\s-]?\d{4,5}-?\d{4}$/)]],
@@ -36,19 +31,18 @@ export class PerfilComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    this.carregarDados();
-  }
+  ngOnInit(): void { this.carregarDados(); }
 
   private carregarDados(): void {
     this.carregandoDados.set(true);
-    // Usa o ID real do usuário logado via AuthService
     const idUsuario = this.auth.usuarioId;
+
     if (!idUsuario) {
-      this.erro.set('Usuário não autenticado.');
+      this.toast.erro('Usuário não autenticado.');
       this.carregandoDados.set(false);
       return;
     }
+
     this.usuarioService.buscarPorId(idUsuario).subscribe({
       next: (usuario) => {
         this.form.patchValue({
@@ -59,30 +53,23 @@ export class PerfilComponent implements OnInit {
         this.carregandoDados.set(false);
       },
       error: () => {
-        this.erro.set('Não foi possível carregar os dados do perfil.');
+        this.toast.erro('Não foi possível carregar os dados do perfil.');
         this.carregandoDados.set(false);
       }
     });
   }
 
-  get camposFormulario() {
-    return this.form.controls;
-  }
+  get camposFormulario() { return this.form.controls; }
 
   campoInvalido(campo: string): boolean {
-    const controle = this.form.get(campo);
-    return !!(controle && controle.invalid && (controle.dirty || controle.touched));
+    const c = this.form.get(campo);
+    return !!(c && c.invalid && (c.dirty || c.touched));
   }
 
   onSubmit(): void {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
+    if (this.form.invalid) { this.form.markAllAsTouched(); return; }
 
     this.carregando.set(true);
-    this.erro.set(null);
-    this.sucesso.set(false);
 
     const idUsuario = this.auth.usuarioId!;
     const payload = {
@@ -94,18 +81,14 @@ export class PerfilComponent implements OnInit {
     this.usuarioService.atualizar(idUsuario, payload).subscribe({
       next: () => {
         this.carregando.set(false);
-        this.sucesso.set(true);
-        setTimeout(() => this.sucesso.set(false), 4000);
+        this.toast.sucesso('Perfil atualizado com sucesso!');
       },
-      error: (err: { status: number }) => {
+      error: (err) => {
         this.carregando.set(false);
         if (err.status === 409) {
-          this.erro.set('Este e-mail já está em uso por outro usuário.');
-        } else if (err.status === 0) {
-          this.erro.set('Não foi possível conectar ao servidor.');
-        } else {
-          this.erro.set('Erro ao salvar as alterações. Tente novamente.');
+          this.toast.erro('Este e-mail já está em uso por outro usuário.');
         }
+        // demais erros pelo interceptor
       }
     });
   }

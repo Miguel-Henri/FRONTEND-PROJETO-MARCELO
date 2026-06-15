@@ -4,6 +4,7 @@ import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from '../../shared/navbar/navbar';
 import { SidebarComponent } from '../../shared/sidebar/sidebar';
 import { ToastComponent } from '../../shared/toast/toast.component';
+import { LoadingBarComponent } from '../../shared/loading-bar/loading-bar.component';
 
 @Component({
   selector: 'app-main-layout',
@@ -12,7 +13,8 @@ import { ToastComponent } from '../../shared/toast/toast.component';
     RouterOutlet,
     NavbarComponent,
     SidebarComponent,
-    ToastComponent
+    ToastComponent,
+    LoadingBarComponent
   ],
   templateUrl: './main-layout.html',
   styleUrls: ['./main-layout.css']

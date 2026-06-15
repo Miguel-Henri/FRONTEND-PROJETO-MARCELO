@@ -2,6 +2,8 @@ import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { ExtratoService, Lancamento } from '../../core/services/extrato.service';
+import { ToastService } from '../../shared/toast/toast.service';
+
 @Component({
   selector: 'app-extrato',
   standalone: true,
@@ -14,7 +16,8 @@ export class ExtratoComponent implements OnInit {
 
   lancamentos = signal<Lancamento[]>([]);
   carregando = signal(false);
-  erro = signal<string | null>(null);
+  /** Guarda se houve erro no carregamento para mostrar estado vazio amigável */
+  erroCarregamento = signal(false);
 
   paginaAtual = signal(1);
   itensPorPagina = 10;
@@ -27,7 +30,6 @@ export class ExtratoComponent implements OnInit {
     const total = this.totalPaginas();
     const atual = this.paginaAtual();
     const pages: (number | '...')[] = [];
-
     if (total <= 7) {
       for (let i = 1; i <= total; i++) pages.push(i);
     } else {
@@ -42,20 +44,18 @@ export class ExtratoComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private extratoService: ExtratoService
+    private extratoService: ExtratoService,
+    private toast: ToastService
   ) {
     const hoje = new Date();
     const primeiroDia = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
-
     this.form = this.fb.group({
       dataInicio: [this.formatarData(primeiroDia)],
       dataFim: [this.formatarData(hoje)]
     });
   }
 
-  ngOnInit(): void {
-    this.buscar();
-  }
+  ngOnInit(): void { this.buscar(); }
 
   private formatarData(data: Date): string {
     return data.toISOString().split('T')[0];
@@ -64,7 +64,7 @@ export class ExtratoComponent implements OnInit {
   buscar(pagina = 1): void {
     this.paginaAtual.set(pagina);
     this.carregando.set(true);
-    this.erro.set(null);
+    this.erroCarregamento.set(false);
 
     const { dataInicio, dataFim } = this.form.value;
 
@@ -74,13 +74,10 @@ export class ExtratoComponent implements OnInit {
         this.totalItens.set(resp.total);
         this.carregando.set(false);
       },
-      error: (err: { status: number }) => {
+      error: () => {
         this.carregando.set(false);
-        if (err.status === 0) {
-          this.erro.set('Não foi possível conectar ao servidor.');
-        } else {
-          this.erro.set('Erro ao carregar o extrato. Tente novamente.');
-        }
+        this.erroCarregamento.set(true);
+        this.toast.erro('Erro ao carregar o extrato. Tente novamente.');
       }
     });
   }
@@ -90,21 +87,10 @@ export class ExtratoComponent implements OnInit {
     this.buscar(pagina as number);
   }
 
-  anterior(): void {
-    if (this.paginaAtual() > 1) this.buscar(this.paginaAtual() - 1);
-  }
-
-  proximo(): void {
-    if (this.paginaAtual() < this.totalPaginas()) this.buscar(this.paginaAtual() + 1);
-  }
-
-  onFiltrar(): void {
-    this.buscar(1);
-  }
-
-  isEllipsis(p: number | '...'): boolean {
-    return p === '...';
-  }
+  anterior(): void { if (this.paginaAtual() > 1) this.buscar(this.paginaAtual() - 1); }
+  proximo(): void  { if (this.paginaAtual() < this.totalPaginas()) this.buscar(this.paginaAtual() + 1); }
+  onFiltrar(): void { this.buscar(1); }
+  isEllipsis(p: number | '...'): boolean { return p === '...'; }
 
   formatarValor(valor: number): string {
     return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
