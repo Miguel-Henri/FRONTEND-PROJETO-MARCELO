@@ -23,8 +23,8 @@
       <tbody>
         <tr *ngFor="let conta of contas()">
           <td>{{ conta.nomeUsuario }}</td>
-          <td>{{ conta.email }}</td>
-          <td>{{ conta.dataSolicitacao | date:'dd/MM/yyyy' }}</td>
+          <td>{{ conta.emailUsuario }}</td>  <!-- era conta.email, campo real é emailUsuario -->
+          <td>{{ conta.dataCriacao | date:'dd/MM/yyyy' }}</td>  <!-- era dataSolicitacao -->
           <td class="acoes">
             <button class="btn-aprovar" (click)="aprovar(conta.id)">Aprovar</button>
             <button class="btn-rejeitar" (click)="rejeitar(conta.id)">Rejeitar</button>

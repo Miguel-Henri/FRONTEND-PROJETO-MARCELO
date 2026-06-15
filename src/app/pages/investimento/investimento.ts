@@ -2,7 +2,22 @@ import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import {Investimento, InvestimentoService, ResumoInvestimentos} from '../../core/services/investimentos.service';
+import { Investimento, InvestimentoService, ResumoInvestimentos } from '../../core/services/investimentos.service';
+
+type StatusInvestimentoView = 'ATIVO' | 'ENCERRADO' | 'VENCIDO' | 'RESGATADO';
+
+interface InvestimentoView {
+  id: number;
+  tipo: string;
+  descricao: string;
+  valorAplicado: number;
+  valorAtual: number;
+  rendimento: number;
+  percentualRendimento: number;
+  dataAplicacao: string;
+  vencimento?: string | null;
+  status: StatusInvestimentoView;
+}
 
 @Component({
   selector: 'app-investimentos',
@@ -14,7 +29,7 @@ import {Investimento, InvestimentoService, ResumoInvestimentos} from '../../core
 export class InvestimentosComponent implements OnInit {
   form: FormGroup;
 
-  investimentos = signal<Investimento[]>([]);
+  investimentos = signal<InvestimentoView[]>([]);
   carregando = signal(false);
   carregandoAplicacao = signal(false);
   carregandoResgate = signal<number | null>(null);
@@ -33,15 +48,25 @@ export class InvestimentosComponent implements OnInit {
 
   resumo = computed<ResumoInvestimentos>(() => {
     const lista = this.investimentos().filter(i => i.status === 'ATIVO');
+
     const totalAplicado = lista.reduce((s, i) => s + i.valorAplicado, 0);
     const totalAtual = lista.reduce((s, i) => s + i.valorAtual, 0);
     const rendimentoTotal = totalAtual - totalAplicado;
     const percentualTotal = totalAplicado > 0 ? (rendimentoTotal / totalAplicado) * 100 : 0;
-    return { totalAplicado, totalAtual, rendimentoTotal, percentualTotal };
+
+    return {
+      totalAplicado,
+      totalAtual,
+      rendimentoTotal,
+      percentualTotal
+    };
   });
 
   ativos = computed(() => this.investimentos().filter(i => i.status === 'ATIVO'));
-  encerrados = computed(() => this.investimentos().filter(i => i.status !== 'ATIVO'));
+
+  encerrados = computed(() =>
+    this.investimentos().filter(i => i.status !== 'ATIVO')
+  );
 
   constructor(
     private fb: FormBuilder,
@@ -63,12 +88,13 @@ export class InvestimentosComponent implements OnInit {
     this.erro.set(null);
 
     this.investimentoService.listar().subscribe({
-      next: (lista) => {
-        this.investimentos.set(lista);
+      next: (lista: Investimento[]) => {
+        this.investimentos.set(lista.map(inv => this.normalizarInvestimento(inv)));
         this.carregando.set(false);
       },
       error: (err: { status: number }) => {
         this.carregando.set(false);
+
         if (err.status === 0) {
           this.erro.set('Não foi possível conectar ao servidor.');
         } else {
@@ -76,6 +102,32 @@ export class InvestimentosComponent implements OnInit {
         }
       }
     });
+  }
+
+  private normalizarInvestimento(investimento: Investimento): InvestimentoView {
+    const inv = investimento as any;
+
+    const tipo = inv.tipo ?? 'CDB';
+    const valorAplicado = Number(inv.valorAplicado ?? inv.valorInvestido ?? inv.valor ?? 0);
+    const valorAtual = Number(inv.valorAtual ?? valorAplicado);
+    const rendimento = Number(inv.rendimento ?? valorAtual - valorAplicado);
+    const percentualRendimento = Number(
+      inv.percentualRendimento ??
+      (valorAplicado > 0 ? (rendimento / valorAplicado) * 100 : 0)
+    );
+
+    return {
+      id: Number(inv.id),
+      tipo,
+      descricao: inv.descricao ?? this.labelTipo(tipo),
+      valorAplicado,
+      valorAtual,
+      rendimento,
+      percentualRendimento,
+      dataAplicacao: inv.dataAplicacao ?? inv.dataCriacao ?? inv.criadoEm ?? new Date().toISOString(),
+      vencimento: inv.vencimento ?? null,
+      status: inv.status ?? 'ATIVO'
+    };
   }
 
   get camposFormulario() {
@@ -91,6 +143,7 @@ export class InvestimentosComponent implements OnInit {
     this.exibirFormulario.update(v => !v);
     this.erroAplicacao.set(null);
     this.sucesso.set(null);
+
     if (!this.exibirFormulario()) {
       this.form.reset({ tipo: 'CDB', prazoMeses: 12 });
     }
@@ -106,7 +159,11 @@ export class InvestimentosComponent implements OnInit {
     this.erroAplicacao.set(null);
     this.sucesso.set(null);
 
-    this.investimentoService.aplicar(this.form.value).subscribe({
+    this.investimentoService.aplicar({
+      tipo: this.form.value.tipo,
+      valor: this.form.value.valor,
+      prazoMeses: this.form.value.prazoMeses
+    } as any).subscribe({
       next: () => {
         this.carregandoAplicacao.set(false);
         this.sucesso.set('Investimento aplicado com sucesso!');
@@ -116,6 +173,7 @@ export class InvestimentosComponent implements OnInit {
       },
       error: (err: { status: number }) => {
         this.carregandoAplicacao.set(false);
+
         if (err.status === 422) {
           this.erroAplicacao.set('Saldo insuficiente para realizar a aplicação.');
         } else if (err.status === 0) {
@@ -127,7 +185,7 @@ export class InvestimentosComponent implements OnInit {
     });
   }
 
-  resgatar(investimento: Investimento): void {
+  resgatar(investimento: InvestimentoView): void {
     this.carregandoResgate.set(investimento.id);
     this.sucesso.set(null);
     this.erro.set(null);
@@ -140,8 +198,9 @@ export class InvestimentosComponent implements OnInit {
       },
       error: (err: { status: number }) => {
         this.carregandoResgate.set(null);
+
         if (err.status === 422) {
-          this.erro.set('Este investimento não pode ser resgatado antes do vencimento.');
+          this.erro.set('Este investimento não pode ser encerrado.');
         } else if (err.status === 0) {
           this.erro.set('Não foi possível conectar ao servidor.');
         } else {
@@ -152,15 +211,18 @@ export class InvestimentosComponent implements OnInit {
   }
 
   formatarValor(valor: number): string {
-    return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    return valor.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    });
+  }
+
+  formatarPercentual(valor: number): string {
+    return `${valor.toFixed(2).replace('.', ',')}%`;
   }
 
   formatarData(dataISO: string): string {
     return new Date(dataISO).toLocaleDateString('pt-BR');
-  }
-
-  formatarPercentual(valor: number): string {
-    return (valor >= 0 ? '+' : '') + valor.toFixed(2) + '%';
   }
 
   labelTipo(tipo: string): string {

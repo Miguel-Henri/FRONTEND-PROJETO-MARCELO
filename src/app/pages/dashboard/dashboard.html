@@ -1,27 +1,27 @@
 <section class="dashboard">
 
-  <h1>Dashboard</h1>
+  <h1>Olá, {{ nomeUsuario() }}!</h1>
 
   <div class="cards">
 
     <div class="card">
       <h3>Saldo Atual</h3>
-      <p>R$ {{ saldo }}</p>
+      <p>{{ saldo() | currency:'BRL':'symbol':'1.2-2':'pt-BR' }}</p>
     </div>
 
     <div class="card">
-      <h3>Transferências</h3>
-      <p>25 realizadas</p>
+      <h3>Conta</h3>
+      <p>Ag. {{ agencia() }} — C/C {{ numeroConta() }}</p>
     </div>
 
     <div class="card">
       <h3>Investimentos</h3>
-      <p>3 ativos</p>
+      <p>Ver em <a routerLink="/investimentos">Investimentos</a></p>
     </div>
 
     <div class="card">
-      <h3>Último Acesso</h3>
-      <p>Hoje</p>
+      <h3>Extrato</h3>
+      <p>Ver em <a routerLink="/extrato">Extrato</a></p>
     </div>
 
   </div>

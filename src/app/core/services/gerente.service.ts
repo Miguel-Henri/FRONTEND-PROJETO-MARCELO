@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { AuthService } from './auth.service';
 
 export interface ContaPendente {
-  id: number;
+  id: number;           // id da conta (não do usuário)
   nomeUsuario: string;
-  email: string;
-  dataSolicitacao: string;
-  status: 'PENDENTE' | 'APROVADA' | 'REJEITADA';
+  emailUsuario: string;
+  dataCriacao: string;  // campo real no ContaResumoDTO
+  status: 'PENDENTE' | 'ATIVA' | 'BLOQUEADA';
 }
 
 @Injectable({ providedIn: 'root' })
@@ -15,17 +16,47 @@ export class GerenteService {
 
   private readonly apiUrl = 'http://localhost:8080/api/gerente';
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private auth: AuthService
+  ) {}
 
-  listarContasPendentes(): Observable<ContaPendente[]> {
-    return this.http.get<ContaPendente[]>(`${this.apiUrl}/contas/pendentes`);
+  // O back exige o header X-Gerente-Conta-Id com o ID da conta do gerente
+  private headers(): HttpHeaders {
+    const contaId = this.auth.contaAtiva?.contaId ?? 0;
+    return new HttpHeaders({ 'X-Gerente-Conta-Id': contaId.toString() });
   }
 
-  aprovarConta(id: number): Observable<void> {
-    return this.http.patch<void>(`${this.apiUrl}/contas/${id}/aprovar`, {});
+  listarContasPendentes(): Observable<any> {
+    // Retorna Page<ContaResumoDTO>; o componente usa .content
+    return this.http.get<any>(
+      `${this.apiUrl}/contas/pendentes`,
+      { headers: this.headers() }
+    );
   }
 
-  rejeitarConta(id: number): Observable<void> {
-    return this.http.patch<void>(`${this.apiUrl}/contas/${id}/rejeitar`, {});
+  // O back usa PATCH /contas/acao com body JSON, não PATCH /contas/{id}/aprovar
+  aprovarConta(contaId: number): Observable<string> {
+    return this.http.patch(
+      `${this.apiUrl}/contas/acao`,
+      {
+        contaId,
+        gerenteContaId: this.auth.contaAtiva?.contaId,
+        acao: 'APROVAR'
+      },
+      { responseType: 'text' }
+    );
+  }
+
+  rejeitarConta(contaId: number): Observable<string> {
+    return this.http.patch(
+      `${this.apiUrl}/contas/acao`,
+      {
+        contaId,
+        gerenteContaId: this.auth.contaAtiva?.contaId,
+        acao: 'REJEITAR'
+      },
+      { responseType: 'text' }
+    );
   }
 }

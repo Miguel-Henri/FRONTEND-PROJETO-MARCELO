@@ -14,7 +14,7 @@ import { EsqueciSenhaComponent } from './pages/esqueci-senha/esqueci-senha';
 export const routes: Routes = [
   { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
   { path: 'usuario/cadastro', component: CadastroUsuarioComponent },
-  { path: 'esqueci-senha', component: EsqueciSenhaComponent }, 
+  { path: 'esqueci-senha', component: EsqueciSenhaComponent },
   {
     path: '',
     component: MainLayoutComponent,
@@ -24,25 +24,12 @@ export const routes: Routes = [
       { path: 'deposito', component: DepositoComponent },
       { path: 'perfil', component: PerfilComponent },
       { path: 'extrato', component: ExtratoComponent },
-      {
-        path: 'perfil',
-        component: PerfilComponent
-      },
-
-      {
-        path: 'extrato',
-        component: ExtratoComponent
-      },
-      {
-        path: 'investimentos',
-        component: InvestimentosComponent
-      },
+      { path: 'investimentos', component: InvestimentosComponent },
       {
         path: 'gerente',
         component: GerenteComponent,
-        canActivate: [gerenteGuard]   // ← protege a rota
-      },
-      
+        canActivate: [gerenteGuard]
+      }
     ]
   }
 ];
