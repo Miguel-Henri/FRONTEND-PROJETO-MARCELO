@@ -1,28 +1,41 @@
+/* src/app/shared/sidebar/sidebar.css */
 .sidebar {
-  width: 240px;
+  width: 260px;
   min-height: calc(100vh - 70px);
-
-  background: white;
-
+  background: #ffffff;
   display: flex;
   flex-direction: column;
-
-  border-right: 1px solid #ddd;
+  padding: 20px 0;
+  border-right: 1px solid #e5e5ea;
 }
 
 .sidebar a {
-
   text-decoration: none;
-  color: #333;
-
-  padding: 18px 20px;
-
-  transition: .2s;
+  color: #1c1c1e;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
 }
 
 .sidebar a:hover {
+  background: #f8f9fa;
+  color: #0066cc;
+  border-left-color: #0066cc;
+}
 
-  background: #eff6ff;
+/* Item de saída estilizado de forma discreta no final */
+.sidebar a[routerLink="/"] {
+  margin-top: auto;
+  color: #636366;
+  border-top: 1px solid #f2f2f7;
+}
 
-  color: #1e3a8a;
+.sidebar a[routerLink="/"]:hover {
+  color: #121212;
+  background: #fff0f0; /* Opção neutra ou mantenha apenas cinza caso prefira */
+  border-left-color: #121212;
 }

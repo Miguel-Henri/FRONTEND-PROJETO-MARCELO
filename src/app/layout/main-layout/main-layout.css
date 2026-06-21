@@ -1,16 +1,21 @@
+/* src/app/layout/main-layout/main-layout.css */
 .container {
-
   display: flex;
-
-  min-height:
-  calc(100vh - 70px);
-
-  background: #f5f7fa;
+  min-height: calc(100vh - 70px);
+  background: #f8f9fa;
 }
 
 .content {
-
   flex: 1;
-
   overflow-y: auto;
+  padding: 40px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+  .content {
+    padding: 20px;
+  }
 }

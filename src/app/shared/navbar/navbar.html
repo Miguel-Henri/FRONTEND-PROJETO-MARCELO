@@ -1,13 +1,30 @@
-<header class="navbar">
-
-  <div class="logo">
-    IFBANK
+<nav class="navbar">
+  <div class="navbar-brand">
+    <span class="logo">IFBANK</span>
+    <span class="badge-segmento">Premium</span>
   </div>
 
-  <div class="usuario">
-    <span>{{ nomeUsuario }}</span>
-    <img [src]="fotoUsuario" alt="Foto usuário">
-    <button class="btn-logout" (click)="logout()">Sair</button>
-  </div>
+  <div class="navbar-control">
+    
+    <div class="usuario-perfil">
+      <div class="usuario-avatar-wrapper">
+        <img class="avatar-img" [src]="fotoUsuario" alt="Foto de perfil" />
+      </div>
+      
+      <div class="usuario-info">
+        <span class="usuario-saudacao">Conectado como</span>
+        <strong class="usuario-nome">{{ nomeUsuario }}</strong>
+      </div>
+    </div>
 
-</header>
+    <button class="btn-logout" (click)="logout()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+        <polyline points="16 17 21 12 16 7" />
+        <line x1="21" y1="12" x2="9" y2="12" />
+      </svg>
+      <span>Sair</span>
+    </button>
+
+  </div>
+</nav>

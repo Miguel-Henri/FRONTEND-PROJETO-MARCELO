@@ -1,11 +1,16 @@
+// src/app/pages/dashboard/dashboard.component.ts
 import { Component, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router'; // 1. IMPORTAÇÃO ADICIONADA
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule, 
+    RouterLink // 2. DIRETIVA ADICIONADA AQUI PARA HABILITAR O ROUTERLINK NO HTML
+  ],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css']
 })

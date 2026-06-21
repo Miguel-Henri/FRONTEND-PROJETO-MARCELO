@@ -1,26 +1,22 @@
+/* src/app/pages/gerente/gerente.css */
 .gerente {
-  padding: 32px;
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
 .gerente h1 {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: #1e3a8a;
-  margin-bottom: 4px;
-}
-
-.gerente h2 {
-  font-size: 1rem;
-  font-weight: 400;
-  color: #555;
-  margin-bottom: 24px;
+  font-size: 24px;
+  font-weight: 600;
+  color: #0a2540;
+  margin-bottom: 6px;
 }
 
 .tabela-container {
-  background: white;
-  border: 1px solid #ddd;
+  background: #ffffff;
+  border: 1px solid #e5e5ea;
   border-radius: 8px;
   overflow: hidden;
+  margin-top: 24px;
 }
 
 .tabela {
@@ -28,65 +24,48 @@
   border-collapse: collapse;
 }
 
-.tabela thead {
-  background: #eff6ff;
-}
-
 .tabela th {
-  text-align: left;
+  background: #0a2540;
+  color: #ffffff;
   padding: 14px 20px;
-  font-size: 0.85rem;
-  color: #1e3a8a;
-  font-weight: 600;
-  border-bottom: 1px solid #ddd;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
 }
 
 .tabela td {
-  padding: 14px 20px;
-  font-size: 0.9rem;
-  color: #333;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.tabela tr:last-child td {
-  border-bottom: none;
-}
-
-.acoes {
-  display: flex;
-  gap: 8px;
-}
-
-.btn-aprovar,
-.btn-rejeitar {
-  padding: 6px 16px;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: .2s;
+  padding: 16px 20px;
+  font-size: 14px;
+  color: #121212;
+  border-bottom: 1px solid #f2f2f7;
 }
 
 .btn-aprovar {
-  background: #1e3a8a;
-  color: white;
+  background: #0066cc;
+  color: #ffffff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
 }
 
 .btn-aprovar:hover {
-  background: #1e40af;
+  background: #0052cc;
 }
 
 .btn-rejeitar {
-  background: white;
-  color: #dc2626;
-  border: 1px solid #dc2626;
+  background: #ffffff;
+  color: #121212;
+  border: 1px solid #121212;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
 }
 
 .btn-rejeitar:hover {
-  background: #fef2f2;
-}
-
-.erro {
-  color: #dc2626;
-  font-size: 0.9rem;
+  background: #f8f9fa;
 }
