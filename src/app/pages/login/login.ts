@@ -1,26 +1,30 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
-import { DepositoService } from '../../core/services/deposito.service';
+import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 
 @Component({
-  selector: 'app-deposito',
+  selector: 'app-login',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
-  templateUrl: './deposito.html',
-  styleUrl: './deposito.css'
+  templateUrl: './login.html',
+  styleUrl: './login.css'
 })
-export class DepositoComponent {
+export class LoginComponent {
   form: FormGroup;
   carregando = signal(false);
-  sucesso = signal(false);
   erro = signal<string | null>(null);
+  mostrarSenha = signal(false);
 
-  constructor(private fb: FormBuilder, private depositoService: DepositoService, private auth: AuthService) {
+  constructor(
+    private fb: FormBuilder,
+    private auth: AuthService,
+    private router: Router
+  ) {
     this.form = this.fb.group({
-      valor: [null, [Validators.required, Validators.min(0.01), Validators.max(50000)]]
+      email: ['', [Validators.required, Validators.email]],
+      senha: ['', [Validators.required]]
     });
   }
 
@@ -33,6 +37,10 @@ export class DepositoComponent {
     return !!(controle && controle.invalid && (controle.dirty || controle.touched));
   }
 
+  toggleMostrarSenha(): void {
+    this.mostrarSenha.update(v => !v);
+  }
+
   onSubmit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -41,32 +49,24 @@ export class DepositoComponent {
 
     this.carregando.set(true);
     this.erro.set(null);
-    this.sucesso.set(false);
 
-    const valor = this.form.value.valor;
-    this.depositoService.realizar(valor).subscribe({
+    const { email, senha } = this.form.value;
+
+    this.auth.login(email, senha).subscribe({
       next: () => {
         this.carregando.set(false);
-        this.sucesso.set(true);
-        this.auth.atualizarSaldo(valor);
-        this.form.reset();
+        this.router.navigate(['/dashboard']);
       },
       error: (err: { status: number }) => {
         this.carregando.set(false);
-        if (err.status === 404) {
-          this.erro.set('Conta não encontrada.');
+        if (err.status === 401) {
+          this.erro.set('E-mail ou senha inválidos.');
         } else if (err.status === 0) {
           this.erro.set('Não foi possível conectar ao servidor.');
         } else {
-          this.erro.set('Erro ao realizar o depósito. Tente novamente.');
+          this.erro.set('Erro ao entrar. Tente novamente.');
         }
       }
     });
-  }
-
-  novo(): void {
-    this.form.reset();
-    this.sucesso.set(false);
-    this.erro.set(null);
   }
 }

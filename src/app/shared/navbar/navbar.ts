@@ -19,11 +19,13 @@ export class NavbarComponent {
   }
 
   get fotoUsuario(): string {
-    return this.auth.sessao()?.fotoPerfil || 'https://i.pravatar.cc/150';
+    const foto = this.auth.sessao()?.fotoPerfil;
+    if (!foto) return 'avatar-default.svg';
+    return foto.startsWith('http') ? foto : `http://localhost:8080/${foto}`;
   }
 
   logout(): void {
     this.auth.logout();
-    this.router.navigate(['/usuario/cadastro']);
+    this.router.navigate(['/login']);
   }
 }

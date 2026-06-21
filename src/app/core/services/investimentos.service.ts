@@ -3,11 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 
-// Campos reais retornados pelo back (Investimento.java)
+// Campos retornados pelo back (InvestimentoDTO.java)
 export interface Investimento {
   id: number;
-  tipoInvestimento: string;   // back usa tipoInvestimento, não tipo
-  valorInvestido: number;     // back usa valorInvestido, não valorAplicado
+  tipoInvestimento: string;
+  valorInvestido: number;
+  valorAtual: number;
+  rendimento: number;
   dataInicio: string;
   dataFim?: string;
   status: 'ATIVO' | 'ENCERRADO';

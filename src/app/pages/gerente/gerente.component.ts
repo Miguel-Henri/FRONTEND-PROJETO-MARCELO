@@ -1,6 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GerenteService, ContaPendente } from '../../core/services/gerente.service';
+import { Emprestimo, EmprestimoService } from '../../core/services/emprestimos.service';
 import { ToastService } from '../../shared/toast/toast.service';
 
 @Component({
@@ -16,13 +17,18 @@ export class GerenteComponent implements OnInit {
   carregando = signal(false);
   erro = signal<string | null>(null);
 
+  emprestimos = signal<Emprestimo[]>([]);
+  carregandoEmprestimos = signal(false);
+
   constructor(
     private gerenteService: GerenteService,
+    private emprestimoService: EmprestimoService,
     private toast: ToastService
   ) {}
 
   ngOnInit(): void {
     this.carregar();
+    this.carregarEmprestimos();
   }
 
   carregar(): void {
@@ -65,6 +71,47 @@ export class GerenteComponent implements OnInit {
         this.contas.update(lista => lista.filter(c => c.id !== id));
       },
       error: () => this.toast.erro('Erro ao rejeitar conta.')
+    });
+  }
+
+  carregarEmprestimos(): void {
+    this.carregandoEmprestimos.set(true);
+    this.emprestimoService.listarPendentes().subscribe({
+      next: (lista: Emprestimo[]) => {
+        this.emprestimos.set(lista);
+        this.carregandoEmprestimos.set(false);
+      },
+      error: () => {
+        this.toast.erro('Erro ao carregar empréstimos pendentes.');
+        this.carregandoEmprestimos.set(false);
+      }
+    });
+  }
+
+  aprovarEmprestimo(id: number): void {
+    this.emprestimoService.aprovar(id).subscribe({
+      next: () => {
+        this.toast.sucesso('Empréstimo aprovado com sucesso!');
+        this.emprestimos.update(lista => lista.filter(e => e.id !== id));
+      },
+      error: () => this.toast.erro('Erro ao aprovar empréstimo.')
+    });
+  }
+
+  rejeitarEmprestimo(id: number): void {
+    this.emprestimoService.rejeitar(id).subscribe({
+      next: () => {
+        this.toast.aviso('Empréstimo rejeitado.');
+        this.emprestimos.update(lista => lista.filter(e => e.id !== id));
+      },
+      error: () => this.toast.erro('Erro ao rejeitar empréstimo.')
+    });
+  }
+
+  formatarValor(valor: number): string {
+    return valor.toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
     });
   }
 }

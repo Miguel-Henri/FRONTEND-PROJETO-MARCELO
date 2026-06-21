@@ -8,6 +8,7 @@ import {
 } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { TransferenciaService } from '../../core/services/transferencia.service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-transferencia',
@@ -24,7 +25,8 @@ export class TransferenciaComponent {
 
   constructor(
     private fb: FormBuilder,
-    private transferenciaService: TransferenciaService
+    private transferenciaService: TransferenciaService,
+    private auth: AuthService
   ) {
     this.form = this.fb.group({
       contaDestino: ['', [Validators.required, Validators.pattern(/^\d{5,10}$/)]],
@@ -52,10 +54,12 @@ export class TransferenciaComponent {
     this.erro.set(null);
     this.sucesso.set(false);
 
+    const valor = this.form.value.valor;
     this.transferenciaService.realizar(this.form.value).subscribe({
       next: () => {
         this.carregando.set(false);
         this.sucesso.set(true);
+        this.auth.atualizarSaldo(-valor);
         this.form.reset();
       },
       error: (err: { status: number }) => {
