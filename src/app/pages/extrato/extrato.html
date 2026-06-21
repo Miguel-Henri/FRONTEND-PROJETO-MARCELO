@@ -49,19 +49,21 @@
         </div>
       </div>
 
-      <button type="submit" class="btn btn-primario" [disabled]="carregando()">
-        @if (carregando()) {
+      @if (carregando()) {
+        <button type="button" class="btn btn-primario" disabled>
           <span class="spinner" aria-hidden="true"></span>
-          Buscando...
-        } @else {
+          <span>Buscando...</span>
+        </button>
+      } @else {
+        <button type="submit" class="btn btn-primario">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
             stroke-width="2" width="15" height="15">
             <circle cx="11" cy="11" r="8" />
             <line x1="21" y1="21" x2="16.65" y2="16.65" />
           </svg>
-          Filtrar
-        }
-      </button>
+          <span>Filtrar</span>
+        </button>
+      }
     </form>
   </div>
 
@@ -77,7 +79,6 @@
   }
 
   <div class="tabela-card">
-
     @if (carregando()) {
     <div class="estado-vazio">
       <span class="spinner-dark"></span>
@@ -157,6 +158,5 @@
     </div>
     }
     }
-
   </div>
 </div>

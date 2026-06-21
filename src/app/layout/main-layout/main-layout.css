@@ -1,14 +1,15 @@
-/* src/app/layout/main-layout/main-layout.css */
 .container {
   display: flex;
-  min-height: calc(100vh - 70px);
+  min-height: calc(100vh - 75px);
   background: #f8f9fa;
+  align-items: stretch;
 }
 
 .content {
   flex: 1;
-  overflow-y: auto;
   padding: 40px;
+  background: #f8f9fa;
+  box-sizing: border-box;
 }
 
 @media (max-width: 768px) {

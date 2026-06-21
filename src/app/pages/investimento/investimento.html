@@ -14,21 +14,22 @@
         <p>Aplique e acompanhe seus investimentos</p>
       </div>
     </div>
-    <button class="btn btn-primario" (click)="toggleFormulario()">
-      @if (exibirFormulario()) {
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="2" width="16" height="16">
+
+    @if (exibirFormulario()) {
+      <button type="button" class="btn btn-primario" (click)="toggleFormulario()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
         </svg>
-        Cancelar
-      } @else {
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="2" width="16" height="16">
+        <span>Cancelar</span>
+      </button>
+    } @else {
+      <button type="button" class="btn btn-primario" (click)="toggleFormulario()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
         </svg>
-        Nova Aplicação
-      }
-    </button>
+        <span>Nova Aplicação</span>
+      </button>
+    }
   </div>
 
   @if (sucesso()) {
@@ -66,7 +67,6 @@
     }
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="aplicacao-form">
-
       <div class="campo-grupo">
         <label class="campo-label">Produto <span class="asterisco">*</span></label>
         <div class="tipos-grid">
@@ -127,19 +127,14 @@
         <button type="button" class="btn btn-secundario" (click)="toggleFormulario()" [disabled]="carregandoAplicacao()">
           Cancelar
         </button>
-        <button type="submit" class="btn btn-primario" [disabled]="carregandoAplicacao() || form.invalid">
+        <button type="submit" class="btn btn-primario" [disabled]="form.invalid || carregandoAplicacao()">
           @if (carregandoAplicacao()) {
             <span class="spinner" aria-hidden="true"></span> Aplicando...
           } @else {
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="2" width="16" height="16">
-              <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>
-            </svg>
-            Aplicar
+            <span>Aplicar</span>
           }
         </button>
       </div>
-
     </form>
   </div>
   }
@@ -170,14 +165,14 @@
       </div>
     </div>
     <div class="resumo-card">
-      <div class="resumo-icone" [class.resumo-icone--verde]="resumo().rendimentoTotal >= 0" [class.resumo-icone--vermelho]="resumo().rendimentoTotal < 0">
+      <div class="resumo-icone" [class.resumo-icone--azul]="resumo().rendimentoTotal >= 0">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>
         </svg>
       </div>
       <div>
         <div class="resumo-rotulo">Rendimento Total</div>
-        <div class="resumo-valor" [class.valor-positivo]="resumo().rendimentoTotal >= 0" [class.valor-negativo]="resumo().rendimentoTotal < 0">
+        <div class="resumo-valor" [class.valor-positivo]="resumo().rendimentoTotal >= 0">
           {{ formatarValor(resumo().rendimentoTotal) }}
           <span class="resumo-percentual">{{ formatarPercentual(resumo().percentualTotal) }}</span>
         </div>
@@ -218,9 +213,7 @@
           </div>
           <div class="investimento-valor-item">
             <span class="investimento-valor-rotulo">Rendimento</span>
-            <span class="investimento-valor-numero"
-              [class.valor-positivo]="inv.rendimento >= 0"
-              [class.valor-negativo]="inv.rendimento < 0">
+            <span class="investimento-valor-numero" [class.valor-positivo]="inv.rendimento >= 0">
               {{ formatarValor(inv.rendimento) }}
               <span class="percentual-tag" [class.percentual-positivo]="inv.percentualRendimento >= 0">
                 {{ formatarPercentual(inv.percentualRendimento) }}
@@ -228,68 +221,10 @@
             </span>
           </div>
         </div>
-        <div class="investimento-datas">
-          <span>Aplicado em {{ formatarData(inv.dataAplicacao) }}</span>
-          @if (inv.vencimento) { <span>Vence em {{ formatarData(inv.vencimento) }}</span> }
-        </div>
         <div class="investimento-acoes">
           <button class="btn btn-perigo btn-sm" (click)="resgatar(inv)" [disabled]="carregandoResgate() !== null">
-            @if (carregandoResgate() === inv.id) {
-              <span class="spinner spinner--pequeno" aria-hidden="true"></span> Resgatando...
-            } @else {
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2" width="14" height="14">
-                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-              </svg>
-              Resgatar
-            }
+            Resgatar
           </button>
-        </div>
-      </div>
-      }
-    </div>
-  </section>
-  }
-
-  @if (!carregando() && encerrados().length > 0) {
-  <section class="secao">
-    <h2 class="secao-titulo">
-      <span class="secao-titulo-badge secao-titulo-badge--cinza">{{ encerrados().length }}</span>
-      Histórico
-    </h2>
-    <div class="investimentos-lista">
-      @for (inv of encerrados(); track inv.id) {
-      <div class="investimento-card investimento-card--encerrado">
-        <div class="investimento-header">
-          <div class="investimento-tipo-badge investimento-tipo-badge--cinza">{{ labelTipo(inv.tipo) }}</div>
-          <div class="investimento-status"
-            [class.investimento-status--vencido]="inv.status === 'VENCIDO'"
-            [class.investimento-status--resgatado]="inv.status === 'RESGATADO'">
-            {{ inv.status === 'VENCIDO' ? 'Vencido' : 'Resgatado' }}
-          </div>
-        </div>
-        <div class="investimento-descricao">{{ inv.descricao }}</div>
-        <div class="investimento-valores">
-          <div class="investimento-valor-item">
-            <span class="investimento-valor-rotulo">Aplicado</span>
-            <span class="investimento-valor-numero">{{ formatarValor(inv.valorAplicado) }}</span>
-          </div>
-          <div class="investimento-valor-item">
-            <span class="investimento-valor-rotulo">Resgatado</span>
-            <span class="investimento-valor-numero">{{ formatarValor(inv.valorAtual) }}</span>
-          </div>
-          <div class="investimento-valor-item">
-            <span class="investimento-valor-rotulo">Rendimento</span>
-            <span class="investimento-valor-numero"
-              [class.valor-positivo]="inv.rendimento >= 0"
-              [class.valor-negativo]="inv.rendimento < 0">
-              {{ formatarValor(inv.rendimento) }}
-            </span>
-          </div>
-        </div>
-        <div class="investimento-datas">
-          <span>Aplicado em {{ formatarData(inv.dataAplicacao) }}</span>
-          @if (inv.vencimento) { <span>Vencimento: {{ formatarData(inv.vencimento) }}</span> }
         </div>
       </div>
       }
@@ -306,18 +241,10 @@
     </div>
     <h3>Nenhum investimento ainda</h3>
     <p>Comece agora aplicando seu dinheiro e acompanhe seus rendimentos.</p>
-    <button class="btn btn-primario" (click)="toggleFormulario()">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-        stroke-width="2" width="16" height="16">
-        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-      </svg>
-      Fazer Primeira Aplicação
-    </button>
   </div>
   }
 
   <div class="card-rodape">
     <a routerLink="/dashboard" class="link-voltar">← Voltar para o Dashboard</a>
   </div>
-
 </div>

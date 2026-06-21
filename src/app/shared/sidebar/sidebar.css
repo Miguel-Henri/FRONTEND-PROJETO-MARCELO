@@ -1,12 +1,13 @@
-/* src/app/shared/sidebar/sidebar.css */
 .sidebar {
   width: 260px;
-  min-height: calc(100vh - 70px);
+  min-height: calc(100vh - 75px);
   background: #ffffff;
   display: flex;
   flex-direction: column;
   padding: 20px 0;
   border-right: 1px solid #e5e5ea;
+  flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .sidebar a {
@@ -27,7 +28,6 @@
   border-left-color: #0066cc;
 }
 
-/* Item de saída estilizado de forma discreta no final */
 .sidebar a[routerLink="/"] {
   margin-top: auto;
   color: #636366;
@@ -36,6 +36,41 @@
 
 .sidebar a[routerLink="/"]:hover {
   color: #121212;
-  background: #fff0f0; /* Opção neutra ou mantenha apenas cinza caso prefira */
+  background: #f8f9fa;
   border-left-color: #121212;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    min-height: auto;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 8px;
+    border-right: none;
+    border-bottom: 1px solid #e5e5ea;
+    background: #0a2540;
+    gap: 4px;
+  }
+  
+  .sidebar a {
+    padding: 10px 14px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.8);
+    border-left: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 4px;
+  }
+  
+  .sidebar a:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    border-bottom-color: #ffffff;
+  }
+  
+  .sidebar a[routerLink="/"] {
+    margin-top: 0;
+    border-top: none;
+    color: rgba(255, 255, 255, 0.6);
+  }
 }
