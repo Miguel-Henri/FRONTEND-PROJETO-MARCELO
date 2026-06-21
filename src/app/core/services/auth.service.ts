@@ -30,8 +30,7 @@ export interface ContaSessao {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
-  // O back usa /api/usuarios/login, não /api/auth/login
-  private readonly apiUrl = 'http://localhost:8080/api/usuarios/login';
+  private readonly apiUrl = 'http://localhost:8080/api/auth/login';
 
   sessao = signal<SessaoUsuario | null>(null);
 
@@ -43,6 +42,8 @@ export class AuthService {
   login(email: string, senha: string): Observable<any> {
     return this.http.post<any>(this.apiUrl, { email, senha }).pipe(
       tap(resposta => {
+        localStorage.setItem('token', resposta.token);
+
         // Deriva o perfil a partir das contas retornadas
         const contas: ContaSessao[] = resposta.contas ?? [];
         const temGerente = contas.some((c: ContaSessao) => c.tipo === 'GERENTE');
@@ -75,6 +76,23 @@ export class AuthService {
   logout(): void {
     this.sessao.set(null);
     localStorage.removeItem('sessao');
+    localStorage.removeItem('token');
+  }
+
+  atualizarSaldo(delta: number): void {
+    const atual = this.sessao();
+    if (!atual?.contaAtiva) return;
+
+    const contaAtiva = { ...atual.contaAtiva, saldo: atual.contaAtiva.saldo + delta };
+    const contas = atual.contas.map(c => c.contaId === contaAtiva.contaId ? contaAtiva : c);
+    const novaSessao: SessaoUsuario = { ...atual, contas, contaAtiva };
+
+    this.sessao.set(novaSessao);
+    localStorage.setItem('sessao', JSON.stringify(novaSessao));
+  }
+
+  get token(): string | null {
+    return localStorage.getItem('token');
   }
 
   get perfil(): PerfilUsuario | null {

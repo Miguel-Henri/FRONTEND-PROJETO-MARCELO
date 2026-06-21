@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Investimento, InvestimentoService, ResumoInvestimentos } from '../../core/services/investimentos.service';
+import { AuthService } from '../../core/services/auth.service';
 
 type StatusInvestimentoView = 'ATIVO' | 'ENCERRADO' | 'VENCIDO' | 'RESGATADO';
 
@@ -70,7 +71,8 @@ export class InvestimentosComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private investimentoService: InvestimentoService
+    private investimentoService: InvestimentoService,
+    private auth: AuthService
   ) {
     this.form = this.fb.group({
       tipo: ['CDB', Validators.required],
@@ -105,28 +107,22 @@ export class InvestimentosComponent implements OnInit {
   }
 
   private normalizarInvestimento(investimento: Investimento): InvestimentoView {
-    const inv = investimento as any;
-
-    const tipo = inv.tipo ?? 'CDB';
-    const valorAplicado = Number(inv.valorAplicado ?? inv.valorInvestido ?? inv.valor ?? 0);
-    const valorAtual = Number(inv.valorAtual ?? valorAplicado);
-    const rendimento = Number(inv.rendimento ?? valorAtual - valorAplicado);
-    const percentualRendimento = Number(
-      inv.percentualRendimento ??
-      (valorAplicado > 0 ? (rendimento / valorAplicado) * 100 : 0)
-    );
+    const valorAplicado = investimento.valorInvestido;
+    const valorAtual = investimento.valorAtual;
+    const rendimento = investimento.rendimento;
+    const percentualRendimento = valorAplicado > 0 ? (rendimento / valorAplicado) * 100 : 0;
 
     return {
-      id: Number(inv.id),
-      tipo,
-      descricao: inv.descricao ?? this.labelTipo(tipo),
+      id: investimento.id,
+      tipo: investimento.tipoInvestimento,
+      descricao: this.labelTipo(investimento.tipoInvestimento),
       valorAplicado,
       valorAtual,
       rendimento,
       percentualRendimento,
-      dataAplicacao: inv.dataAplicacao ?? inv.dataCriacao ?? inv.criadoEm ?? new Date().toISOString(),
-      vencimento: inv.vencimento ?? null,
-      status: inv.status ?? 'ATIVO'
+      dataAplicacao: investimento.dataInicio,
+      vencimento: investimento.dataFim ?? null,
+      status: investimento.status === 'ENCERRADO' ? 'RESGATADO' : 'ATIVO'
     };
   }
 
@@ -159,15 +155,16 @@ export class InvestimentosComponent implements OnInit {
     this.erroAplicacao.set(null);
     this.sucesso.set(null);
 
+    const valor = this.form.value.valor;
     this.investimentoService.aplicar({
       tipo: this.form.value.tipo,
-      valor: this.form.value.valor,
-      prazoMeses: this.form.value.prazoMeses
-    } as any).subscribe({
+      valor
+    }).subscribe({
       next: () => {
         this.carregandoAplicacao.set(false);
         this.sucesso.set('Investimento aplicado com sucesso!');
         this.exibirFormulario.set(false);
+        this.auth.atualizarSaldo(-valor);
         this.form.reset({ tipo: 'CDB', prazoMeses: 12 });
         this.carregar();
       },
@@ -191,9 +188,10 @@ export class InvestimentosComponent implements OnInit {
     this.erro.set(null);
 
     this.investimentoService.resgatar(investimento.id).subscribe({
-      next: () => {
+      next: (resgatado: Investimento) => {
         this.carregandoResgate.set(null);
         this.sucesso.set('Resgate realizado com sucesso! O valor foi creditado na sua conta.');
+        this.auth.atualizarSaldo(resgatado.valorAtual);
         this.carregar();
       },
       error: (err: { status: number }) => {
