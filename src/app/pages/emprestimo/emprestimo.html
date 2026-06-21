@@ -1,0 +1,182 @@
+<div class="emprestimos-wrapper">
+
+  <div class="page-header">
+    <div class="page-header-info">
+      <h1>Empréstimos</h1>
+      <p>Solicite e acompanhe seus empréstimos</p>
+    </div>
+    <button class="btn btn-primario" (click)="toggleFormulario()">
+      {{ exibirFormulario() ? 'Cancelar' : 'Solicitar Empréstimo' }}
+    </button>
+  </div>
+
+  @if (sucesso()) {
+  <div class="alerta alerta-sucesso" role="alert">
+    <span>{{ sucesso() }}</span>
+  </div>
+  }
+
+  @if (erro()) {
+  <div class="alerta alerta-erro" role="alert">
+    <span>{{ erro() }}</span>
+  </div>
+  }
+
+  @if (exibirFormulario()) {
+  <div class="solicitacao-card">
+    <div class="solicitacao-card-header">
+      <h2>Nova Solicitação</h2>
+      <p>Informe o valor e o número de parcelas</p>
+    </div>
+
+    @if (erroSolicitacao()) {
+    <div class="alerta alerta-erro" role="alert">
+      <span>{{ erroSolicitacao() }}</span>
+    </div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="solicitacao-form">
+
+      <div class="campos-linha">
+        <div class="campo-grupo">
+          <label for="valor" class="campo-label">Valor <span class="asterisco">*</span></label>
+          <input id="valor" type="number" formControlName="valor" class="campo-input"
+            [class.campo-input--invalido]="campoInvalido('valor')" placeholder="0,00" step="0.01" min="100" />
+          @if (campoInvalido('valor')) {
+          <div class="campo-erro">
+            @if (camposFormulario['valor'].errors?.['required']) { Valor é obrigatório. }
+            @else if (camposFormulario['valor'].errors?.['min']) { O valor mínimo é R$ 100,00. }
+            @else if (camposFormulario['valor'].errors?.['max']) { O valor máximo é R$ 500.000,00. }
+          </div>
+          }
+          <div class="campo-dica">Mínimo: R$ 100,00</div>
+        </div>
+
+        <div class="campo-grupo">
+          <label for="parcelas" class="campo-label">Parcelas <span class="asterisco">*</span></label>
+          <input id="parcelas" type="number" formControlName="parcelas" class="campo-input"
+            [class.campo-input--invalido]="campoInvalido('parcelas')" placeholder="12" min="1" max="360" />
+          @if (campoInvalido('parcelas')) {
+          <div class="campo-erro">
+            @if (camposFormulario['parcelas'].errors?.['required']) { Número de parcelas é obrigatório. }
+            @else if (camposFormulario['parcelas'].errors?.['min']) { O mínimo é 1 parcela. }
+            @else if (camposFormulario['parcelas'].errors?.['max']) { O máximo é 360 parcelas. }
+          </div>
+          }
+          <div class="campo-dica">Entre 1 e 360 parcelas</div>
+        </div>
+      </div>
+
+      <div class="acoes">
+        <button type="button" class="btn btn-secundario" (click)="toggleFormulario()" [disabled]="carregandoSolicitacao()">
+          Cancelar
+        </button>
+        <button type="submit" class="btn btn-primario" [disabled]="carregandoSolicitacao() || form.invalid">
+          {{ carregandoSolicitacao() ? 'Solicitando...' : 'Solicitar' }}
+        </button>
+      </div>
+
+    </form>
+  </div>
+  }
+
+  @if (carregando()) {
+  <div class="estado-vazio">
+    <p>Carregando empréstimos...</p>
+  </div>
+  }
+
+  @if (!carregando() && ativos().length > 0) {
+  <section class="secao">
+    <h2 class="secao-titulo">Empréstimos Ativos</h2>
+    <div class="emprestimos-lista">
+      @for (emp of ativos(); track emp.id) {
+      <div class="emprestimo-card">
+        <div class="emprestimo-header">
+          <div class="emprestimo-valor">{{ formatarValor(emp.valorEmprestimo) }}</div>
+          <div class="emprestimo-status">{{ rotuloStatus(emp.status) }}</div>
+        </div>
+        <div class="emprestimo-info">
+          <span>{{ emp.parcelas }}x</span>
+          <span>Taxa: {{ emp.taxaJurosMensal }}% a.m.</span>
+          <span>Solicitado em {{ formatarData(emp.dataSolicitacao) }}</span>
+        </div>
+
+        @if (emp.status === 'EM_ANDAMENTO') {
+        <div class="parcelas-resumo">
+          {{ parcelasPagas(emp) }} de {{ emp.parcelas }} parcelas pagas
+        </div>
+        <table class="parcelas-tabela">
+          <thead>
+            <tr>
+              <th>Parcela</th>
+              <th>Vencimento</th>
+              <th>Valor</th>
+              <th>Status</th>
+              <th>Ação</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (parcela of emp.parcelasEmprestimo; track parcela.id) {
+            <tr>
+              <td>{{ parcela.numeroParcela }}</td>
+              <td>{{ formatarData(parcela.dataVencimento) }}</td>
+              <td>{{ formatarValor(parcela.valorParcela) }}</td>
+              <td>{{ parcela.status === 'PAGO' ? 'Paga' : 'Pendente' }}</td>
+              <td>
+                @if (parcela.status !== 'PAGO') {
+                <button class="btn btn-sm btn-primario" (click)="pagarParcela(emp, parcela)"
+                  [disabled]="carregandoPagamento() !== null">
+                  {{ carregandoPagamento() === parcela.id ? 'Pagando...' : 'Pagar' }}
+                </button>
+                } @else {
+                <span class="parcela-paga">✓</span>
+                }
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+        }
+      </div>
+      }
+    </div>
+  </section>
+  }
+
+  @if (!carregando() && encerrados().length > 0) {
+  <section class="secao">
+    <h2 class="secao-titulo">Histórico</h2>
+    <div class="emprestimos-lista">
+      @for (emp of encerrados(); track emp.id) {
+      <div class="emprestimo-card emprestimo-card--encerrado">
+        <div class="emprestimo-header">
+          <div class="emprestimo-valor">{{ formatarValor(emp.valorEmprestimo) }}</div>
+          <div class="emprestimo-status">{{ rotuloStatus(emp.status) }}</div>
+        </div>
+        <div class="emprestimo-info">
+          <span>{{ emp.parcelas }}x</span>
+          <span>Taxa: {{ emp.taxaJurosMensal }}% a.m.</span>
+          <span>Solicitado em {{ formatarData(emp.dataSolicitacao) }}</span>
+        </div>
+      </div>
+      }
+    </div>
+  </section>
+  }
+
+  @if (!carregando() && emprestimos().length === 0 && !erro()) {
+  <div class="estado-vazio">
+    <h3>Nenhum empréstimo ainda</h3>
+    <p>Solicite um empréstimo e acompanhe suas parcelas aqui.</p>
+    <button class="btn btn-primario" (click)="toggleFormulario()">
+      Solicitar Empréstimo
+    </button>
+  </div>
+  }
+
+  <div class="card-rodape">
+    <a routerLink="/dashboard" class="link-voltar">← Voltar para o Dashboard</a>
+  </div>
+
+</div>

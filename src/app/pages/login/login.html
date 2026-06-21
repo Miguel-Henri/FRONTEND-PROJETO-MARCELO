@@ -1,0 +1,57 @@
+<div class="login-wrapper">
+  <div class="login-card">
+
+    <div class="login-header">
+      <h1>IFBANK</h1>
+      <p>Entre na sua conta</p>
+    </div>
+
+    @if (erro()) {
+    <div class="alerta alerta-erro" role="alert">
+      <span>{{ erro() }}</span>
+    </div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="login-form">
+
+      <div class="campo-grupo">
+        <label for="email" class="campo-label">E-mail <span class="asterisco">*</span></label>
+        <input id="email" type="email" formControlName="email" class="campo-input"
+          [class.campo-input--invalido]="campoInvalido('email')" placeholder="voce@email.com" />
+        @if (campoInvalido('email')) {
+        <div class="campo-erro">
+          @if (camposFormulario['email'].errors?.['required']) { E-mail é obrigatório. }
+          @else if (camposFormulario['email'].errors?.['email']) { E-mail inválido. }
+        </div>
+        }
+      </div>
+
+      <div class="campo-grupo">
+        <label for="senha" class="campo-label">Senha <span class="asterisco">*</span></label>
+        <div class="campo-senha">
+          <input id="senha" [type]="mostrarSenha() ? 'text' : 'password'" formControlName="senha" class="campo-input"
+            [class.campo-input--invalido]="campoInvalido('senha')" placeholder="••••••••" />
+          <button type="button" class="botao-olho" (click)="toggleMostrarSenha()">
+            {{ mostrarSenha() ? 'Ocultar' : 'Mostrar' }}
+          </button>
+        </div>
+        @if (campoInvalido('senha')) {
+        <div class="campo-erro">
+          @if (camposFormulario['senha'].errors?.['required']) { Senha é obrigatória. }
+        </div>
+        }
+      </div>
+
+      <button type="submit" class="btn btn-primario" [disabled]="carregando() || form.invalid">
+        {{ carregando() ? 'Entrando...' : 'Entrar' }}
+      </button>
+
+    </form>
+
+    <div class="login-rodape">
+      <a routerLink="/esqueci-senha">Esqueci minha senha</a>
+      <a routerLink="/usuario/cadastro">Criar conta</a>
+    </div>
+
+  </div>
+</div>

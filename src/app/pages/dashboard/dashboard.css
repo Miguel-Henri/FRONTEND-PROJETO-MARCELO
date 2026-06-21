@@ -37,3 +37,12 @@
   font-size: 22px;
   font-weight: bold;
 }
+
+.card a {
+  color: #1e3a8a;
+  text-decoration: none;
+}
+
+.card a:hover {
+  text-decoration: underline;
+}
