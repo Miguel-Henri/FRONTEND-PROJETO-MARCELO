@@ -128,7 +128,7 @@ export class CadastroUsuarioComponent {
         this.form.reset();
         this.previewFoto.set(null);
         this.arquivoFoto.set(null);
-        setTimeout(() => this.router.navigate(['/usuarios']), 2000);
+        setTimeout(() => this.router.navigate(['/login']), 2000);
       },
       error: (err: { status: number }) => {
         this.carregando.set(false);

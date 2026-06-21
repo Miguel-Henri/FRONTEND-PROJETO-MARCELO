@@ -34,4 +34,40 @@
     </table>
   </div>
 
+  <h2>Empréstimos Pendentes de Aprovação</h2>
+
+  <p *ngIf="carregandoEmprestimos()">Carregando...</p>
+
+  <p *ngIf="!carregandoEmprestimos() && emprestimos().length === 0">
+    Nenhum empréstimo pendente no momento.
+  </p>
+
+  <div class="tabela-container" *ngIf="emprestimos().length > 0">
+    <table class="tabela">
+      <thead>
+        <tr>
+          <th>Conta</th>
+          <th>Valor</th>
+          <th>Parcelas</th>
+          <th>Taxa (a.m.)</th>
+          <th>Data de Solicitação</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let emprestimo of emprestimos()">
+          <td>{{ emprestimo.numeroConta }}</td>
+          <td>{{ formatarValor(emprestimo.valorEmprestimo) }}</td>
+          <td>{{ emprestimo.parcelas }}x</td>
+          <td>{{ emprestimo.taxaJurosMensal }}%</td>
+          <td>{{ emprestimo.dataSolicitacao | date:'dd/MM/yyyy' }}</td>
+          <td class="acoes">
+            <button class="btn-aprovar" (click)="aprovarEmprestimo(emprestimo.id)">Aprovar</button>
+            <button class="btn-rejeitar" (click)="rejeitarEmprestimo(emprestimo.id)">Rejeitar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
 </section>

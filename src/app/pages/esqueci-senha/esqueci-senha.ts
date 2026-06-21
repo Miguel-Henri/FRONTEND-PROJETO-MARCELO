@@ -22,7 +22,7 @@ type Etapa = 'email' | 'token' | 'nova-senha' | 'sucesso';
 })
 export class EsqueciSenhaComponent {
 
-  private readonly apiUrl = 'http://localhost:8080/auth/password';
+  private readonly apiUrl = 'http://localhost:8080/api/auth/password';
 
   etapa = signal<Etapa>('email');
   carregando = signal(false);
@@ -153,6 +153,6 @@ export class EsqueciSenhaComponent {
   }
 
   irParaLogin(): void {
-    this.router.navigate(['/']);
+    this.router.navigate(['/login']);
   }
 }
