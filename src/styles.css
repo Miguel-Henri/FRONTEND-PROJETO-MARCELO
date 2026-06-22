@@ -1,1 +1,84 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background-color: #f8f9fa;
+  color: #121212;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f8f9fa;
+}
+::-webkit-scrollbar-thumb {
+  background: #d1d1d6;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #8e8e93;
+}
+
+/* BLINDAGEM DE BOTÕES - FORÇA EXIBIÇÃO DE TEXTO */
+.btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  padding: 12px 24px !important;
+  border-radius: 6px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  border: none !important;
+  outline: none !important;
+  text-decoration: none !important;
+  min-width: 145px !important;
+  height: 44px !important;
+  box-sizing: border-box !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.btn span {
+  display: inline !important;
+  visibility: visible !important;
+  color: inherit !important;
+}
+
+.btn-primario {
+  background: #0066cc !important;
+  color: #ffffff !important;
+}
+
+.btn-primario:hover:not(:disabled) {
+  background: #0052cc !important;
+}
+
+.btn-primario svg {
+  stroke: #ffffff !important;
+  fill: none !important;
+  width: 16px !important;
+  height: 16px !important;
+}
+
+.btn-secundario {
+  background: #ffffff !important;
+  color: #1c1c1e !important;
+  border: 1px solid #d1d1d6 !important;
+}
+
+.btn-secundario:hover:not(:disabled) {
+  background: #f8f9fa !important;
+  border-color: #1c1c1e !important;
+}

@@ -1,16 +1,22 @@
 .container {
-
   display: flex;
-
-  min-height:
-  calc(100vh - 70px);
-
-  background: #f5f7fa;
+  min-height: calc(100vh - 75px);
+  background: #f8f9fa;
+  align-items: stretch;
 }
 
 .content {
-
   flex: 1;
+  padding: 40px;
+  background: #f8f9fa;
+  box-sizing: border-box;
+}
 
-  overflow-y: auto;
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+  .content {
+    padding: 20px;
+  }
 }

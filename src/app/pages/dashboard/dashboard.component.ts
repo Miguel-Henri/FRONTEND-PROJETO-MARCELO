@@ -1,3 +1,4 @@
+// src/app/pages/dashboard/dashboard.component.ts
 import { Component, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
