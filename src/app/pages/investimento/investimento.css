@@ -9,6 +9,7 @@
   box-sizing: border-box;
 }
 
+/* ── Header ── */
 .page-header {
   display: flex;
   align-items: center;
@@ -54,6 +55,7 @@
   margin: 0;
 }
 
+/* ── Botões ── */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -70,40 +72,47 @@
   text-decoration: none;
 }
 
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .btn-primario {
-  background: #0066cc !important;
-  color: #ffffff !important;
+  background: #0066cc;
+  color: #ffffff;
 }
 
 .btn-primario:hover:not(:disabled) {
-  background: #0052cc !important;
+  background: #0052cc;
 }
 
 .btn-primario svg {
-  stroke: #ffffff !important;
+  stroke: #ffffff;
   fill: none;
 }
 
 .btn-secundario {
-  background: #ffffff !important;
-  color: #1c1c1e !important;
-  border: 1px solid #d1d1d6 !important;
+  background: #ffffff;
+  color: #1c1c1e;
+  border: 1px solid #d1d1d6;
 }
 
 .btn-secundario:hover:not(:disabled) {
-  background: #f8f9fa !important;
-  border-color: #1c1c1e !important;
+  background: #f8f9fa;
+  border-color: #1c1c1e;
 }
 
 .btn-perigo {
-  background: #ffffff !important;
-  color: #121212 !important;
-  border: 1px solid #121212 !important;
+  background: #eef4fb;
+  color: #0052cc;
+  border: 1px solid #b3cfe8;
+  font-weight: 600;
 }
 
 .btn-perigo:hover:not(:disabled) {
-  background: #121212 !important;
-  color: #ffffff !important;
+  background: #0052cc;
+  color: #ffffff;
+  border-color: #0052cc;
 }
 
 .btn-sm {
@@ -111,12 +120,13 @@
   font-size: 0.825rem;
 }
 
+/* ── Alertas ── */
 .alerta {
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
   padding: 1rem 1.25rem;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 0.875rem;
   font-weight: 500;
 }
@@ -129,23 +139,33 @@
 }
 
 .alerta-sucesso {
-  background: #121212;
+  background: #0a2540;
   color: #ffffff;
-  border: 1px solid #121212;
+  border: 1px solid #0a2540;
+}
+
+.alerta-sucesso svg {
+  stroke: #7ab8f5;
 }
 
 .alerta-erro {
-  background: #ffffff;
-  color: #121212;
-  border: 1px solid #121212;
+  background: #eef4fb;
+  color: #0a2540;
+  border: 1px solid #b3cfe8;
 }
 
+.alerta-erro svg {
+  stroke: #0066cc;
+}
+
+/* ── Formulário de aplicação ── */
 .aplicacao-card {
   background: #ffffff;
-  border-radius: 8px;
+  border-radius: 10px;
   border: 1px solid #e5e5ea;
   overflow: hidden;
   width: 100%;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
 }
 
 .aplicacao-card-header {
@@ -155,7 +175,7 @@
 }
 
 .aplicacao-card-header h2 {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 600;
   margin: 0 0 0.25rem;
 }
@@ -163,7 +183,7 @@
 .aplicacao-card-header p {
   font-size: 0.875rem;
   margin: 0;
-  opacity: 0.8;
+  opacity: 0.75;
 }
 
 .aplicacao-form {
@@ -191,9 +211,7 @@
   transition: all 0.2s;
 }
 
-.tipo-opcao input[type="radio"] {
-  display: none;
-}
+.tipo-opcao input[type="radio"] { display: none; }
 
 .tipo-opcao:hover {
   border-color: #0066cc;
@@ -211,8 +229,11 @@
   color: #1c1c1e;
 }
 
-.tipo-opcao--selecionado .tipo-opcao-rotulo {
-  color: #0066cc;
+.tipo-opcao--selecionado .tipo-opcao-rotulo { color: #0066cc; }
+
+.tipo-opcao-desc {
+  font-size: 0.775rem;
+  color: #636366;
 }
 
 .campos-linha {
@@ -233,9 +254,9 @@
   color: #1c1c1e;
 }
 
-.campo-input-wrapper {
-  position: relative;
-}
+.asterisco { color: #0066cc; }
+
+.campo-input-wrapper { position: relative; }
 
 .campo-icone {
   position: absolute;
@@ -257,48 +278,112 @@
   color: #121212;
   background: #ffffff;
   box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
+.campo-input:focus {
+  border-color: #0066cc;
+  box-shadow: 0 0 0 3px rgba(0,102,204,0.1);
+}
+
+.campo-input--invalido {
+  border-color: #0066cc !important;
+  background: #eef4fb;
+}
+
+.campo-erro {
+  font-size: 0.775rem;
+  color: #0052cc;
+}
+
+.campo-dica {
+  font-size: 0.775rem;
+  color: #636366;
+}
+
+.acoes {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e5ea;
+}
+
+/* ── Cards de resumo ── */
 .resumo-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
   width: 100%;
 }
 
 .resumo-card {
   background: #ffffff;
-  border-radius: 8px;
-  padding: 1.5rem;
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
   display: flex;
   align-items: center;
-  gap: 1.25rem;
+  gap: 1rem;
   border: 1px solid #e5e5ea;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
 }
 
 .resumo-icone {
   width: 44px;
   height: 44px;
-  border-radius: 6px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .resumo-icone--azul {
-  background: rgba(0, 102, 204, 0.05);
+  background: rgba(0,102,204,0.08);
 }
 
 .resumo-icone--azul svg {
   stroke: #0066cc;
+  width: 20px;
+  height: 20px;
+}
+
+.resumo-icone--roxo {
+  background: rgba(0,82,204,0.08);
+}
+
+.resumo-icone--roxo svg {
+  stroke: #0052cc;
+  width: 20px;
+  height: 20px;
+}
+
+.resumo-rotulo {
+  font-size: 0.8rem;
+  color: #636366;
+  font-weight: 500;
+  margin-bottom: 0.2rem;
 }
 
 .resumo-valor {
   font-size: 1.2rem;
   font-weight: 700;
   color: #0a2540;
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
 }
 
+.valor-positivo { color: #0066cc; }
+
+.resumo-percentual {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #636366;
+}
+
+/* ── Seção de aplicações ── */
 .secao {
   display: flex;
   flex-direction: column;
@@ -307,46 +392,199 @@
 }
 
 .secao-titulo {
-  font-size: 1.1rem;
-  font-weight: 600;
+  font-size: 1rem;
+  font-weight: 700;
   color: #121212;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.secao-titulo-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.secao-titulo-badge--verde {
+  background: rgba(0,102,204,0.12);
+  color: #0066cc;
 }
 
 .investimentos-lista {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.75rem;
   width: 100%;
 }
 
+/* ── Card de cada investimento ── */
 .investimento-card {
   background: #ffffff;
-  border-radius: 8px;
-  padding: 1.5rem;
+  border-radius: 10px;
   border: 1px solid #e5e5ea;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  transition: box-shadow 0.2s;
 }
 
+.investimento-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.investimento-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem 0.75rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.investimento-tipo-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.775rem;
+  font-weight: 700;
+  background: #0a2540;
+  color: #ffffff;
+  letter-spacing: 0.3px;
+}
+
+.investimento-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.775rem;
+  font-weight: 600;
+}
+
+.investimento-status::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.investimento-status--ativo {
+  background: rgba(0,102,204,0.1);
+  color: #0066cc;
+}
+
+.investimento-descricao {
+  padding: 0.75rem 1.5rem;
+  font-size: 0.85rem;
+  color: #636366;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+/* Grid de valores */
+.investimento-valores {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 1rem 1.5rem;
+  gap: 0;
+}
+
+.investimento-valor-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0 0.75rem;
+  border-right: 1px solid #f0f0f0;
+}
+
+.investimento-valor-item:first-child {
+  padding-left: 0;
+}
+
+.investimento-valor-item:last-child {
+  border-right: none;
+}
+
+.investimento-valor-rotulo {
+  font-size: 0.775rem;
+  color: #636366;
+  font-weight: 500;
+}
+
+.investimento-valor-numero {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0a2540;
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.percentual-tag {
+  font-size: 0.775rem;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: #f0f0f0;
+  color: #636366;
+}
+
+.percentual-positivo {
+  background: rgba(0,102,204,0.12);
+  color: #0066cc;
+}
+
+/* Rodapé do card */
+.investimento-acoes {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0.75rem 1.5rem;
+  background: #fafafa;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* ── Estado vazio ── */
 .estado-vazio {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1.25rem;
+  gap: 1rem;
   padding: 4rem 2rem;
   text-align: center;
   background: #ffffff;
-  border: 1px solid #e5e5ea;
-  border-radius: 8px;
-  width: 100%;
-  box-sizing: border-box;
+  border: 1px dashed #d1d1d6;
+  border-radius: 10px;
+  color: #636366;
 }
 
 .estado-vazio-icone svg {
-  width: 24px;
-  height: 24px;
-  stroke: #636366;
+  width: 36px;
+  height: 36px;
+  stroke: #a1a1aa;
 }
 
+.estado-vazio h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #3a3a3c;
+  margin: 0;
+}
+
+.estado-vazio p {
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+/* ── Rodapé ── */
 .card-rodape {
   padding: 1rem 0;
   text-align: center;
@@ -358,33 +596,41 @@
   text-decoration: none;
 }
 
-.link-voltar:hover {
-  color: #0066cc;
-}
+.link-voltar:hover { color: #0066cc; }
 
+/* ── Spinner ── */
 .spinner {
   display: inline-block;
   width: 15px;
   height: 15px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(255,255,255,0.3);
   border-top-color: #ffffff;
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
+}
+
+.spinner--grande {
+  width: 28px;
+  height: 28px;
+  border-color: rgba(0,102,204,0.2);
+  border-top-color: #0066cc;
 }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 
+/* ── Responsive ── */
 @media (max-width: 768px) {
-  .investimentos-wrapper {
-    padding: 1rem 0;
+  .investimentos-wrapper { padding: 1rem 0; }
+  .page-header { flex-direction: column; align-items: stretch; }
+  .page-header .btn { width: 100%; }
+  .campos-linha { grid-template-columns: 1fr; }
+  .investimento-valores { grid-template-columns: 1fr; }
+  .investimento-valor-item {
+    padding: 0.5rem 0;
+    border-right: none;
+    border-bottom: 1px solid #f0f0f0;
   }
-  .page-header {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .page-header .btn {
-    width: 100%;
-  }
+  .investimento-valor-item:last-child { border-bottom: none; }
 }

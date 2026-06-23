@@ -1,9 +1,3 @@
-/* Aplique este padrão estrutural aos arquivos CSS das páginas operacionais:
-   - src/app/pages/usuario/usuario.css
-   - src/app/pages/transferencia/transferencia.css
-   - src/app/pages/deposito/deposito.css
-   - src/app/pages/perfil/perfil.css */
-
 .cadastro-wrapper {
   display: flex;
   align-items: center;
@@ -20,7 +14,7 @@
   overflow: hidden;
 }
 
-/* Cabeçalho Corporativo e Limpo */
+/* Cabeçalho */
 .card-header {
   background: #0a2540;
   padding: 32px;
@@ -61,33 +55,56 @@ form {
   padding: 32px;
 }
 
-/* Alertas Minimalistas P&B */
+/* Alertas */
 .alerta {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
-  padding: 14px 16px;
-  border-radius: 4px;
+  padding: 16px 20px;
+  border-radius: 8px;
   font-size: 13px;
   font-weight: 500;
-  margin: 20px 32px 0;
+  margin: 24px 32px 0;
+}
+
+.alerta svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  margin-top: 1px;
 }
 
 .alerta-sucesso {
-  background: #121212;
+  background: #0a2540;
   color: #ffffff;
-  border: 1px solid #121212;
+  border: 1px solid #0a2540;
 }
-.alerta-sucesso svg { stroke: #ffffff; }
+
+.alerta-sucesso svg {
+  stroke: #4ade80;
+}
 
 .alerta-erro {
-  background: #ffffff;
-  color: #121212;
-  border: 1px solid #121212;
+  background: #fff5f5;
+  color: #c0392b;
+  border: 1px solid #fcc;
 }
-.alerta-erro svg { stroke: #121212; }
 
-/* Inputs e Grupos de Campos */
+.alerta-erro svg {
+  stroke: #c0392b;
+}
+
+/* Estado de sucesso — botões centralizados */
+.sucesso-acoes {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  padding: 28px 32px;
+  flex-wrap: wrap;
+}
+
+/* Inputs e Grupos */
 .campo-grupo {
   margin-bottom: 20px;
 }
@@ -133,11 +150,27 @@ form {
 }
 
 .campo-input--invalido {
-  border-color: #121212 !important;
-  background: #f8f9fa;
+  border-color: #c0392b !important;
+  background: #fff5f5;
 }
 
-/* Botões Modernos e Robustos */
+.campo-erro {
+  font-size: 12px;
+  color: #c0392b;
+  margin-top: 4px;
+}
+
+.campo-dica {
+  font-size: 12px;
+  color: #636366;
+  margin-top: 4px;
+}
+
+.asterisco {
+  color: #c0392b;
+}
+
+/* Botões */
 .acoes {
   display: flex;
   gap: 12px;
@@ -159,6 +192,7 @@ form {
   cursor: pointer;
   transition: all 0.2s ease;
   border: none;
+  text-decoration: none;
 }
 
 .btn-primario {
@@ -181,6 +215,27 @@ form {
   border-color: #1c1c1e;
 }
 
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Spinner */
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Rodapé */
 .card-rodape {
   padding: 0 32px 24px;
   text-align: center;
