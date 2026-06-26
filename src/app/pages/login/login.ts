@@ -57,10 +57,10 @@ export class LoginComponent {
         this.carregando.set(false);
         this.router.navigate(['/dashboard']);
       },
-      error: (err: { status: number }) => {
+      error: (err: { status: number; error :{mensagem:string} }) => {
         this.carregando.set(false);
         if (err.status === 401) {
-          this.erro.set('E-mail ou senha inválidos.');
+          this.erro.set(err.error?.mensagem ?? 'E-mail ou senha inválidos.');
         } else if (err.status === 0) {
           this.erro.set('Não foi possível conectar ao servidor.');
         } else {
