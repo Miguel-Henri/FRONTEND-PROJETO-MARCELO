@@ -79,6 +79,14 @@ export class AuthService {
     localStorage.removeItem('token');
   }
 
+  atualizarPerfil(dados: Partial<Pick<SessaoUsuario, 'nome' | 'email' | 'telefone' | 'endereco' | 'fotoPerfil'>>): void {
+  const atual = this.sessao();
+  if (!atual) return;
+  const novaSessao: SessaoUsuario = { ...atual, ...dados };
+  this.sessao.set(novaSessao);
+  localStorage.setItem('sessao', JSON.stringify(novaSessao));
+}
+
   atualizarSaldo(delta: number): void {
     const atual = this.sessao();
     if (!atual?.contaAtiva) return;

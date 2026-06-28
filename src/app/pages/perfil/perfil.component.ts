@@ -23,6 +23,8 @@ export class PerfilComponent implements OnInit {
   carregandoDados = signal(true);
   sucesso = signal(false);
   erro = signal<string | null>(null);
+  previewFoto = signal<string | null>(null);
+  arquivoFoto = signal<File | null>(null);
 
   constructor(
     private fb: FormBuilder,
@@ -64,7 +66,20 @@ export class PerfilComponent implements OnInit {
       }
     });
   }
+  
 
+  onFotoPerfilChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const arquivo = input.files?.[0];
+    if (arquivo) {
+      this.arquivoFoto.set(arquivo);
+      const reader = new FileReader();
+      reader.onload = () => this.previewFoto.set(reader.result as string);
+      reader.readAsDataURL(arquivo);
+    }
+  }
+
+  
   get camposFormulario() {
     return this.form.controls;
   }
@@ -75,38 +90,69 @@ export class PerfilComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
+  if (this.form.invalid) {
+    this.form.markAllAsTouched();
+    return;
+  }
 
-    this.carregando.set(true);
-    this.erro.set(null);
-    this.sucesso.set(false);
+  this.carregando.set(true);
+  this.erro.set(null);
+  this.sucesso.set(false);
 
-    const idUsuario = this.auth.usuarioId!;
+  const idUsuario = this.auth.usuarioId!;
+
+  const salvarDados = (fotoPerfil?: string) => {
     const payload = {
       telefone: this.form.value.telefone || undefined,
       email: this.form.value.email,
-      endereco: this.form.value.endereco || undefined
+      endereco: this.form.value.endereco || undefined,
+      fotoPerfil: fotoPerfil  // <-- inclui o nome da foto se houver
     };
 
     this.usuarioService.atualizar(idUsuario, payload).subscribe({
-      next: () => {
-        this.carregando.set(false);
-        this.sucesso.set(true);
-        setTimeout(() => this.sucesso.set(false), 4000);
+  next: () => {
+    this.carregando.set(false);
+    this.sucesso.set(true);
+    setTimeout(() => this.sucesso.set(false), 4000);
+
+    // Atualiza a sessão local com os novos dados
+    this.auth.atualizarPerfil({
+      email: this.form.value.email,
+      telefone: this.form.value.telefone || undefined,
+      endereco: this.form.value.endereco || undefined,
+      fotoPerfil: payload.fotoPerfil  // já está no payload se veio do upload
+    });
+  },
+  error: (err: { status: number }) => {
+    this.carregando.set(false);
+    if (err.status === 409) {
+      this.erro.set('Este e-mail já está em uso por outro usuário.');
+    } else if (err.status === 0) {
+      this.erro.set('Não foi possível conectar ao servidor.');
+    } else {
+      this.erro.set('Erro ao salvar as alterações. Tente novamente.');
+    }
+  }
+});
+  };
+
+  // Se tem foto, faz upload PRIMEIRO, depois salva com o nome retornado
+  if (this.arquivoFoto()) {
+    const formData = new FormData();
+    formData.append('file', this.arquivoFoto()!);
+
+    this.usuarioService.uploadFoto(formData).subscribe({
+      next: (nomeArquivo: string) => {
+        salvarDados(nomeArquivo);  // <-- agora usa o nome no payload
       },
-      error: (err: { status: number }) => {
+      error: () => {
         this.carregando.set(false);
-        if (err.status === 409) {
-          this.erro.set('Este e-mail já está em uso por outro usuário.');
-        } else if (err.status === 0) {
-          this.erro.set('Não foi possível conectar ao servidor.');
-        } else {
-          this.erro.set('Erro ao salvar as alterações. Tente novamente.');
-        }
+        this.erro.set('Erro ao enviar a foto.');
       }
     });
+  } else {
+    salvarDados();  // sem foto, salva só os outros dados
   }
 }
+  }
+
