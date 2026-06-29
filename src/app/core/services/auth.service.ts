@@ -82,7 +82,8 @@ export class AuthService {
   atualizarPerfil(dados: Partial<Pick<SessaoUsuario, 'nome' | 'email' | 'telefone' | 'endereco' | 'fotoPerfil'>>): void {
   const atual = this.sessao();
   if (!atual) return;
-  const novaSessao: SessaoUsuario = { ...atual, ...dados };
+  const definidos = Object.fromEntries(Object.entries(dados).filter(([, v]) => v !== undefined));
+  const novaSessao: SessaoUsuario = { ...atual, ...definidos };
   this.sessao.set(novaSessao);
   localStorage.setItem('sessao', JSON.stringify(novaSessao));
 }
@@ -101,6 +102,10 @@ export class AuthService {
 
   get token(): string | null {
     return localStorage.getItem('token');
+  }
+
+  definirToken(token: string): void {
+    localStorage.setItem('token', token);
   }
 
   get perfil(): PerfilUsuario | null {

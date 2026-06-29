@@ -25,7 +25,7 @@ export class UsuarioService {
     return this.http.get<Usuario>(`${this.apiUrl}/${id}`);
   }
 
-  atualizar(id: number, dados: Partial<Pick<Usuario, 'email' | 'telefone' | 'endereco'>>): Observable<Usuario> {
-    return this.http.patch<Usuario>(`${this.apiUrl}/${id}`, dados);
+  atualizar(id: number, dados: Partial<Pick<Usuario, 'email' | 'telefone' | 'endereco'>>): Observable<{ usuario: Usuario; token: string }> {
+    return this.http.patch<{ usuario: Usuario; token: string }>(`${this.apiUrl}/${id}`, dados);
   }
 }
