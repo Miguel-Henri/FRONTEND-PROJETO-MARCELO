@@ -110,10 +110,15 @@ export class PerfilComponent implements OnInit {
     };
 
     this.usuarioService.atualizar(idUsuario, payload).subscribe({
-  next: () => {
+  next: (resposta) => {
     this.carregando.set(false);
     this.sucesso.set(true);
     setTimeout(() => this.sucesso.set(false), 4000);
+
+    // Token reflete o e-mail novo (subject do JWT) — evita quebrar requisições seguintes
+    if (resposta?.token) {
+      this.auth.definirToken(resposta.token);
+    }
 
     // Atualiza a sessão local com os novos dados
     this.auth.atualizarPerfil({

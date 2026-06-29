@@ -24,7 +24,7 @@ export interface ExtratoFiltro {
   itensPorPagina: number;
 }
 
-const TIPOS_CREDITO = new Set(['DEPOSITO', 'TRANSFERENCIA_RECEBIDA']);
+const TIPOS_CREDITO = new Set(['DEPOSITO', 'TRANSFERENCIA_RECEBIDA', 'EMPRESTIMO']);
 
 @Injectable({ providedIn: 'root' })
 export class ExtratoService {

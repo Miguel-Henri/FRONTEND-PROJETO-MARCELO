@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Emprestimo, Parcela, EmprestimoService } from '../../core/services/emprestimos.service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-emprestimos',
@@ -33,7 +34,8 @@ export class EmprestimosComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private emprestimoService: EmprestimoService
+    private emprestimoService: EmprestimoService,
+    private auth: AuthService
   ) {
     this.form = this.fb.group({
       valor: [null, [Validators.required, Validators.min(100), Validators.max(500000)]],
@@ -129,6 +131,7 @@ export class EmprestimosComponent implements OnInit {
       next: () => {
         this.carregandoPagamento.set(null);
         this.sucesso.set('Parcela paga com sucesso!');
+        this.auth.atualizarSaldo(-parcela.valorParcela);
         this.carregar();
       },
       error: (err: { status: number }) => {
